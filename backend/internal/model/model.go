@@ -45,3 +45,21 @@ type Budget struct {
 	Month      string    `json:"month"`
 	CreatedAt  time.Time `json:"created_at"`
 }
+
+type Summary struct {
+	Month        string            `json:"month"`
+	TotalIncome  float64           `json:"total_income"`
+	TotalExpense float64           `json:"total_expense"`
+	Balance      float64           `json:"balance"`
+	ByCategory   []CategorySummary `json:"by_category"`
+}
+
+type CategorySummary struct {
+	CategoryID   string  `json:"category_id"`
+	CategoryName string  `json:"category_name"`
+	Icon         string  `json:"icon"`
+	Color        string  `json:"color"`
+	Type         string  `json:"type"`
+	Total        float64 `json:"total"`
+	TxCount      int     `json:"tx_count"` // cuántas transacciones tiene
+}

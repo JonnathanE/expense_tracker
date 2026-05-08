@@ -31,11 +31,13 @@ func main() {
 	jwtService := service.NewJWTService(cfg.JWTSecret)
 	categoryService := service.NewCategoryService(pool)
 	transactionService := service.NewTransactionService(pool)
+	summaryService := service.NewSummaryService(pool)
 
 	// Handlers
 	authHandler := handler.NewAuthHandler(userService, emailService, jwtService)
 	categoryHandler := handler.NewCategoryHandler(categoryService)
 	transactionHandler := handler.NewTransactionHandler(transactionService)
+	summaryHandler := handler.NewSummaryHandler(summaryService)
 
 	// Router
 	r := chi.NewRouter()
@@ -82,6 +84,9 @@ func main() {
 		r.Post("/transactions", transactionHandler.Create)
 		r.Put("/transactions/{id}", transactionHandler.Update)
 		r.Delete("/transactions/{id}", transactionHandler.Delete)
+
+		// Summary
+		r.Get("/summary", summaryHandler.Get)
 	})
 
 	log.Printf("🚀 Servidor corriendo en http://localhost:%s", cfg.Port)
