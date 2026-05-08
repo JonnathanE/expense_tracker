@@ -29,9 +29,13 @@ func main() {
 	userService := service.NewUserService(pool)
 	emailService := service.NewEmailService(cfg.FrontendURL)
 	jwtService := service.NewJWTService(cfg.JWTSecret)
+	categoryService := service.NewCategoryService(pool)
+	transactionService := service.NewTransactionService(pool)
 
 	// Handlers
 	authHandler := handler.NewAuthHandler(userService, emailService, jwtService)
+	categoryHandler := handler.NewCategoryHandler(categoryService)
+	transactionHandler := handler.NewTransactionHandler(transactionService)
 
 	// Router
 	r := chi.NewRouter()
@@ -57,7 +61,7 @@ func main() {
 	r.Get("/auth/activate", authHandler.Activate)
 	r.Post("/auth/login", authHandler.Login)
 
-	// Rutas protegidas (ejemplo para probar el middleware)
+	// Rutas protegidas
 	r.Group(func(r chi.Router) {
 		r.Use(appmiddleware.Auth(jwtService))
 
@@ -66,6 +70,18 @@ func main() {
 			w.Header().Set("Content-Type", "application/json")
 			w.Write([]byte(`{"user_id":"` + userID + `"}`))
 		})
+
+		// Categorías
+		r.Get("/categories", categoryHandler.List)
+		r.Post("/categories", categoryHandler.Create)
+		r.Put("/categories/{id}", categoryHandler.Update)
+		r.Delete("/categories/{id}", categoryHandler.Delete)
+
+		// Transacciones
+		r.Get("/transactions", transactionHandler.List)
+		r.Post("/transactions", transactionHandler.Create)
+		r.Put("/transactions/{id}", transactionHandler.Update)
+		r.Delete("/transactions/{id}", transactionHandler.Delete)
 	})
 
 	log.Printf("🚀 Servidor corriendo en http://localhost:%s", cfg.Port)
