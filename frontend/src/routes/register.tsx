@@ -1,19 +1,10 @@
-import {
-    createFileRoute,
-    redirect,
-    Link,
-} from "@tanstack/react-router";
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-
-import { registerSchema, type RegisterFormData } from "@/lib/schemas";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
+import { useForm } from "react-hook-form";
 import { authApi } from "@/api/auth";
-import { useAuthStore } from "@/store/authStore";
-
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
     Card,
     CardContent,
@@ -22,7 +13,10 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { type RegisterFormData, registerSchema } from "@/lib/schemas";
+import { useAuthStore } from "@/store/authStore";
 
 export const Route = createFileRoute("/register")({
     beforeLoad: () => {

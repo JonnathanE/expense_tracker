@@ -1,5 +1,5 @@
-import { api } from "./client";
 import type { AuthResponse } from "@/types";
+import { api } from "./client";
 
 export const authApi = {
     register: async (data: {
