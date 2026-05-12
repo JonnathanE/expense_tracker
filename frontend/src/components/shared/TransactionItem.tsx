@@ -5,7 +5,7 @@ import type { Transaction } from "@/types";
 interface TransactionItemProps {
     transaction: Transaction;
     onEdit: (transaction: Transaction) => void;
-    onDelete: (id: string) => void;
+    onDeleteRequest: (id: string) => void;
     isDeleting: boolean;
 }
 
@@ -24,29 +24,29 @@ const formatDate = (dateStr: string) =>
 export function TransactionItem({
     transaction,
     onEdit,
-    onDelete,
+    onDeleteRequest,
     isDeleting,
 }: TransactionItemProps) {
     const isIncome = transaction.type === "income";
 
     return (
-        <div className="flex items-center justify-between px-4 py-3 rounded-lg bg-zinc-900 border border-zinc-800 group hover:border-zinc-700 transition-colors">
+        <div className="flex items-center justify-between px-4 py-3 rounded-lg bg-card border border-border group hover:border-muted-foreground/30 transition-colors">
             {/* Izquierda */}
             <div className="flex items-center gap-4">
                 <div className="text-center min-w-10">
-                    <p className="text-xs text-zinc-500 uppercase">
+                    <p className="text-xs text-muted-foreground uppercase">
                         {formatDate(transaction.date)}
                     </p>
                 </div>
 
                 <div>
-                    <p className="text-sm font-medium text-zinc-200">
+                    <p className="text-sm font-medium text-foreground">
                         {transaction.description ||
                             transaction.category_name ||
                             "—"}
                     </p>
                     {transaction.category_name && (
-                        <p className="text-xs text-zinc-500 mt-0.5">
+                        <p className="text-xs text-muted-foreground mt-0.5">
                             {transaction.category_name}
                         </p>
                     )}
@@ -57,18 +57,18 @@ export function TransactionItem({
             <div className="flex items-center gap-3">
                 <span
                     className={`text-sm font-semibold ${
-                        isIncome ? "text-emerald-400" : "text-red-400"
+                        isIncome ? "text-emerald-500" : "text-destructive"
                     }`}
                 >
                     {isIncome ? "+" : "-"}
                     {formatCurrency(transaction.amount)}
                 </span>
 
-                <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="flex gap-1 lg:opacity-0 group-hover:opacity-100 transition-opacity">
                     <Button
                         variant="ghost"
                         size="icon"
-                        className="h-7 w-7 text-zinc-500 hover:text-zinc-200 hover:bg-zinc-800"
+                        className="h-7 w-7 text-muted-foreground hover:text-foreground"
                         onClick={() => onEdit(transaction)}
                     >
                         <Pencil className="h-3.5 w-3.5" />
@@ -76,8 +76,8 @@ export function TransactionItem({
                     <Button
                         variant="ghost"
                         size="icon"
-                        className="h-7 w-7 text-zinc-500 hover:text-red-400 hover:bg-red-950"
-                        onClick={() => onDelete(transaction.id)}
+                        className="h-7 w-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                        onClick={() => onDeleteRequest(transaction.id)}
                         disabled={isDeleting}
                     >
                         <Trash2 className="h-3.5 w-3.5" />

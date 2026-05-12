@@ -55,11 +55,11 @@ type Summary struct {
 }
 
 type CategorySummary struct {
-	CategoryID   string  `json:"category_id"`
-	CategoryName string  `json:"category_name"`
-	Icon         string  `json:"icon"`
-	Color        string  `json:"color"`
-	Type         string  `json:"type"`
+	CategoryID   *string `json:"category_id"`
+	CategoryName *string `json:"category_name"`
+	Icon         *string `json:"icon"`
+	Color        *string `json:"color"`
+	Type         *string `json:"type"`
 	Total        float64 `json:"total"`
 	TxCount      int     `json:"tx_count"` // cuántas transacciones tiene
 }

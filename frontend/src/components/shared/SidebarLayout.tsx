@@ -12,8 +12,10 @@ import {
     SidebarMenuItem,
     SidebarProvider,
     SidebarTrigger,
+    useSidebar,
 } from "@/components/ui/sidebar";
 import { useAuthStore } from "@/store/authStore";
+import type { User } from "@/types";
 
 const NAV_ITEMS = [
     { to: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -25,54 +27,66 @@ interface SidebarLayoutProps {
     children: React.ReactNode;
 }
 
-export function SidebarLayout({ children }: SidebarLayoutProps) {
-    const { user } = useAuthStore();
+function AppSidebar({ user }: { user: User | null }) {
     const routerState = useRouterState();
     const currentPath = routerState.location.pathname;
+    const { setOpenMobile, isMobile } = useSidebar();
+
+    const handleNavClick = () => {
+        if (isMobile) setOpenMobile(false);
+    };
 
     return (
-        <SidebarProvider>
-            <Sidebar collapsible="icon" side="left">
-                {/* Brand */}
-                <SidebarHeader>
-                    <SidebarMenu>
-                        <SidebarMenuItem>
-                            <SidebarMenuButton size="lg" asChild>
-                                <Link to="/">
-                                    <span className="text-xl">💰</span>
-                                    <span className="font-bold">Expense</span>
+        <Sidebar collapsible="icon" side="left">
+            {/* Brand */}
+            <SidebarHeader>
+                <SidebarMenu>
+                    <SidebarMenuItem>
+                        <SidebarMenuButton size="lg" asChild>
+                            <Link to="/" onClick={handleNavClick}>
+                                <span className="text-xl">💰</span>
+                                <span className="font-bold">Expense</span>
+                            </Link>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                </SidebarMenu>
+            </SidebarHeader>
+
+            {/* Nav */}
+            <SidebarContent>
+                <SidebarMenu>
+                    {NAV_ITEMS.map(({ to, label, icon: Icon }) => (
+                        <SidebarMenuItem key={to}>
+                            <SidebarMenuButton
+                                asChild
+                                isActive={currentPath === to}
+                                tooltip={label}
+                                className="py-7"
+                            >
+                                <Link to={to} onClick={handleNavClick}>
+                                    <Icon />
+                                    <span>{label}</span>
                                 </Link>
                             </SidebarMenuButton>
                         </SidebarMenuItem>
-                    </SidebarMenu>
-                </SidebarHeader>
+                    ))}
+                </SidebarMenu>
+            </SidebarContent>
 
-                {/* Nav */}
-                <SidebarContent>
-                    <SidebarMenu>
-                        {NAV_ITEMS.map(({ to, label, icon: Icon }) => (
-                            <SidebarMenuItem key={to}>
-                                <SidebarMenuButton
-                                    asChild
-                                    isActive={currentPath === to}
-                                    tooltip={label}
-                                    className="py-7"
-                                >
-                                    <Link to={to}>
-                                        <Icon />
-                                        <span>{label}</span>
-                                    </Link>
-                                </SidebarMenuButton>
-                            </SidebarMenuItem>
-                        ))}
-                    </SidebarMenu>
-                </SidebarContent>
+            {/* Footer */}
+            <SidebarFooter>
+                <NavUser user={user} />
+            </SidebarFooter>
+        </Sidebar>
+    );
+}
 
-                {/* Footer */}
-                <SidebarFooter>
-                    <NavUser user={user} />
-                </SidebarFooter>
-            </Sidebar>
+export function SidebarLayout({ children }: SidebarLayoutProps) {
+    const { user } = useAuthStore();
+
+    return (
+        <SidebarProvider>
+            <AppSidebar user={user} />
 
             {/* Contenido principal */}
             <SidebarInset>

@@ -18,6 +18,18 @@ export function useCreateCategory() {
     });
 }
 
+export function useUpdateCategory() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({ id, data }: { id: string; data: CreateCategoryData }) =>
+            categoriesApi.update(id, data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["categories"] });
+            queryClient.invalidateQueries({ queryKey: ["summary"] });
+        },
+    });
+}
+
 export function useDeleteCategory() {
     const queryClient = useQueryClient();
     return useMutation({

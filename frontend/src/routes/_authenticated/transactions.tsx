@@ -4,6 +4,16 @@ import { useState } from "react";
 import { MonthPicker } from "@/components/shared/MonthPicker";
 import { TransactionForm } from "@/components/shared/TransactionForm";
 import { TransactionItem } from "@/components/shared/TransactionItem";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import {
     Dialog,
@@ -27,6 +37,7 @@ export const Route = createFileRoute("/_authenticated/transactions")({
 function TransactionsPage() {
     const [open, setOpen] = useState(false);
     const [editing, setEditing] = useState<Transaction | null>(null);
+    const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
 
     const { data: transactions = [], isLoading } = useTransactions();
     const createMutation = useCreateTransaction();
@@ -54,6 +65,13 @@ function TransactionsPage() {
         setEditing(null);
     };
 
+    const handleConfirmDelete = () => {
+        if (!pendingDeleteId) return;
+        deleteMutation.mutate(pendingDeleteId, {
+            onSettled: () => setPendingDeleteId(null),
+        });
+    };
+
     const isPending = createMutation.isPending || updateMutation.isPending;
 
     // Agrupar por fecha para mostrar separadores
@@ -67,42 +85,41 @@ function TransactionsPage() {
         {},
     );
 
-    const formatGroupDate = (dateStr: string) =>
-        new Date(dateStr).toLocaleDateString("es-EC", {
+    const formatGroupDate = (dateStr: string) => {
+        const [year, month, day] = dateStr.split("-").map(Number);
+        return new Date(year, month - 1, day).toLocaleDateString("es-EC", {
             weekday: "long",
             day: "numeric",
             month: "long",
         });
+    };
 
     return (
         <div className="p-8 space-y-8 max-w-3xl mx-auto">
             {/* ── Header ────────────────────────────────────────────── */}
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold text-white">
+                    <h1 className="text-2xl font-bold text-foreground">
                         Transacciones
                     </h1>
-                    <p className="text-zinc-400 text-sm mt-1">
+                    <p className="text-muted-foreground text-sm mt-1">
                         {transactions.length} registros este mes
                     </p>
                 </div>
                 <div className="flex items-center gap-3">
                     <MonthPicker />
-                    <Button
-                        className="bg-indigo-600 hover:bg-indigo-500 gap-2"
-                        onClick={() => setOpen(true)}
-                    >
+                    <Button className="gap-2" onClick={() => setOpen(true)}>
                         <Plus className="h-4 w-4" />
                         Nueva
                     </Button>
                 </div>
             </div>
 
-            {/* ── Modal ─────────────────────────────────────────────── */}
+            {/* ── Modal crear / editar ───────────────────────────────── */}
             <Dialog open={open} onOpenChange={closeModal}>
-                <DialogContent className="bg-zinc-900 border-zinc-800 text-white">
+                <DialogContent>
                     <DialogHeader>
-                        <DialogTitle className="text-white">
+                        <DialogTitle>
                             {editing
                                 ? "Editar transacción"
                                 : "Nueva transacción"}
@@ -117,13 +134,43 @@ function TransactionsPage() {
                 </DialogContent>
             </Dialog>
 
+            {/* ── Confirmación de eliminación ───────────────────────── */}
+            <AlertDialog
+                open={!!pendingDeleteId}
+                onOpenChange={(open) => !open && setPendingDeleteId(null)}
+            >
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>
+                            ¿Eliminar transacción?
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Esta acción no se puede deshacer. La transacción
+                            será eliminada permanentemente.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                        <AlertDialogAction
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            onClick={handleConfirmDelete}
+                            disabled={deleteMutation.isPending}
+                        >
+                            {deleteMutation.isPending
+                                ? "Eliminando..."
+                                : "Eliminar"}
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+
             {/* ── Loading ───────────────────────────────────────────── */}
             {isLoading && (
                 <div className="space-y-2">
                     {[1, 2, 3, 4, 5].map((i) => (
                         <div
                             key={i}
-                            className="h-16 rounded-lg bg-zinc-800 animate-pulse"
+                            className="h-16 rounded-lg bg-muted animate-pulse"
                         />
                     ))}
                 </div>
@@ -133,13 +180,10 @@ function TransactionsPage() {
             {!isLoading && transactions.length === 0 && (
                 <div className="text-center py-20 space-y-4">
                     <p className="text-5xl">📭</p>
-                    <p className="text-zinc-400">
+                    <p className="text-muted-foreground">
                         No hay transacciones este mes.
                     </p>
-                    <Button
-                        className="bg-indigo-600 hover:bg-indigo-500"
-                        onClick={() => setOpen(true)}
-                    >
+                    <Button onClick={() => setOpen(true)}>
                         Crear la primera
                     </Button>
                 </div>
@@ -149,7 +193,7 @@ function TransactionsPage() {
             {!isLoading &&
                 Object.entries(grouped).map(([date, txs]) => (
                     <div key={date} className="space-y-2">
-                        <p className="text-xs font-medium text-zinc-500 uppercase tracking-wider">
+                        <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
                             {formatGroupDate(date)}
                         </p>
                         {txs.map((tx) => (
@@ -157,7 +201,7 @@ function TransactionsPage() {
                                 key={tx.id}
                                 transaction={tx}
                                 onEdit={openEdit}
-                                onDelete={(id) => deleteMutation.mutate(id)}
+                                onDeleteRequest={setPendingDeleteId}
                                 isDeleting={deleteMutation.isPending}
                             />
                         ))}

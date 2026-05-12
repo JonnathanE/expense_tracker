@@ -3,6 +3,16 @@ import { Plus } from "lucide-react";
 import { useState } from "react";
 import { CategoryCard } from "@/components/shared/CategoryCard";
 import { CategoryForm } from "@/components/shared/CategoryForm";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import {
     Dialog,
@@ -14,8 +24,10 @@ import {
     useCategories,
     useCreateCategory,
     useDeleteCategory,
+    useUpdateCategory,
 } from "@/hooks/useCategories";
 import type { CategoryFormData } from "@/lib/schemas";
+import type { Category } from "@/types";
 
 export const Route = createFileRoute("/_authenticated/categories")({
     component: CategoriesPage,
@@ -23,16 +35,43 @@ export const Route = createFileRoute("/_authenticated/categories")({
 
 function CategoriesPage() {
     const [open, setOpen] = useState(false);
+    const [editing, setEditing] = useState<Category | null>(null);
+    const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
 
     const { data: categories = [], isLoading } = useCategories();
     const createMutation = useCreateCategory();
+    const updateMutation = useUpdateCategory();
     const deleteMutation = useDeleteCategory();
 
     const handleSubmit = (data: CategoryFormData) => {
-        createMutation.mutate(data, {
-            onSuccess: () => setOpen(false),
+        if (editing) {
+            updateMutation.mutate(
+                { id: editing.id, data },
+                { onSuccess: closeModal },
+            );
+        } else {
+            createMutation.mutate(data, { onSuccess: closeModal });
+        }
+    };
+
+    const openEdit = (category: Category) => {
+        setEditing(category);
+        setOpen(true);
+    };
+
+    const closeModal = () => {
+        setOpen(false);
+        setEditing(null);
+    };
+
+    const handleConfirmDelete = () => {
+        if (!pendingDeleteId) return;
+        deleteMutation.mutate(pendingDeleteId, {
+            onSettled: () => setPendingDeleteId(null),
         });
     };
+
+    const isPending = createMutation.isPending || updateMutation.isPending;
 
     const expenses = categories.filter((c) => c.type === "expense");
     const incomes = categories.filter((c) => c.type === "income");
@@ -42,37 +81,74 @@ function CategoriesPage() {
             {/* ── Header ────────────────────────────────────────────── */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold text-white">
+                    <h1 className="text-2xl font-bold text-foreground">
                         Categorías
                     </h1>
-                    <p className="text-zinc-400 text-sm mt-1">
+                    <p className="text-muted-foreground text-sm mt-1">
                         {categories.length} categorías creadas
                     </p>
                 </div>
-                <Button
-                    className="bg-indigo-600 hover:bg-indigo-500 gap-2"
-                    onClick={() => setOpen(true)}
-                >
+                <Button className="gap-2" onClick={() => setOpen(true)}>
                     <Plus className="h-4 w-4" />
                     Nueva categoría
                 </Button>
             </div>
 
-            {/* ── Modal ─────────────────────────────────────────────── */}
-            <Dialog open={open} onOpenChange={setOpen}>
-                <DialogContent className="bg-zinc-900 border-zinc-800 text-white">
+            {/* ── Modal crear / editar ───────────────────────────────── */}
+            <Dialog open={open} onOpenChange={closeModal}>
+                <DialogContent>
                     <DialogHeader>
-                        <DialogTitle className="text-white">
-                            Nueva categoría
+                        <DialogTitle>
+                            {editing ? "Editar categoría" : "Nueva categoría"}
                         </DialogTitle>
                     </DialogHeader>
                     <CategoryForm
                         onSubmit={handleSubmit}
-                        onCancel={() => setOpen(false)}
-                        isPending={createMutation.isPending}
+                        onCancel={closeModal}
+                        isPending={isPending}
+                        defaultValues={
+                            editing
+                                ? {
+                                      name: editing.name,
+                                      type: editing.type,
+                                      icon: editing.icon,
+                                      color: editing.color,
+                                  }
+                                : undefined
+                        }
                     />
                 </DialogContent>
             </Dialog>
+
+            {/* ── Confirmación de eliminación ───────────────────────── */}
+            <AlertDialog
+                open={!!pendingDeleteId}
+                onOpenChange={(open) => !open && setPendingDeleteId(null)}
+            >
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>
+                            ¿Eliminar categoría?
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Esta acción no se puede deshacer. La categoría será
+                            eliminada permanentemente.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                        <AlertDialogAction
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            onClick={handleConfirmDelete}
+                            disabled={deleteMutation.isPending}
+                        >
+                            {deleteMutation.isPending
+                                ? "Eliminando..."
+                                : "Eliminar"}
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
 
             {/* ── Loading ───────────────────────────────────────────── */}
             {isLoading && (
@@ -80,7 +156,7 @@ function CategoriesPage() {
                     {[1, 2, 3, 4].map((i) => (
                         <div
                             key={i}
-                            className="h-16 rounded-lg bg-zinc-800 animate-pulse"
+                            className="h-16 rounded-lg bg-muted animate-pulse"
                         />
                     ))}
                 </div>
@@ -92,14 +168,16 @@ function CategoriesPage() {
                     <CategoryGroup
                         title="Gastos"
                         categories={expenses}
-                        onDelete={(id) => deleteMutation.mutate(id)}
+                        onEditRequest={openEdit}
+                        onDeleteRequest={setPendingDeleteId}
                         isDeleting={deleteMutation.isPending}
                     />
 
                     <CategoryGroup
                         title="Ingresos"
                         categories={incomes}
-                        onDelete={(id) => deleteMutation.mutate(id)}
+                        onEditRequest={openEdit}
+                        onDeleteRequest={setPendingDeleteId}
                         isDeleting={deleteMutation.isPending}
                     />
                 </div>
@@ -111,21 +189,23 @@ function CategoriesPage() {
 function CategoryGroup({
     title,
     categories,
-    onDelete,
+    onEditRequest,
+    onDeleteRequest,
     isDeleting,
 }: {
     title: string;
     categories: ReturnType<typeof useCategories>["data"];
-    onDelete: (id: string) => void;
+    onEditRequest: (category: Category) => void;
+    onDeleteRequest: (id: string) => void;
     isDeleting: boolean;
 }) {
     return (
         <div className="space-y-3">
-            <h2 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider">
+            <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
                 {title}
             </h2>
             {!categories || categories.length === 0 ? (
-                <p className="text-zinc-600 text-sm py-4">
+                <p className="text-muted-foreground/50 text-sm py-4">
                     Sin categorías aún.
                 </p>
             ) : (
@@ -134,7 +214,8 @@ function CategoryGroup({
                         <CategoryCard
                             key={category.id}
                             category={category}
-                            onDelete={onDelete}
+                            onEditRequest={onEditRequest}
+                            onDeleteRequest={onDeleteRequest}
                             isDeleting={isDeleting}
                         />
                     ))}

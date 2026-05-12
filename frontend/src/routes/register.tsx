@@ -48,41 +48,41 @@ function RegisterPage() {
     const onSubmit = (data: RegisterFormData) => mutation.mutate(data);
 
     return (
-        <div className="min-h-screen bg-zinc-950 flex items-center justify-center p-4">
+        <div className="min-h-screen bg-background flex items-center justify-center p-4">
             <div className="w-full max-w-sm space-y-6">
                 {/* Logo */}
                 <div className="text-center space-y-2">
                     <div className="text-5xl">💰</div>
-                    <h1 className="text-2xl font-bold text-white">
+                    <h1 className="text-2xl font-bold text-foreground">
                         Expense Tracker
                     </h1>
                 </div>
 
                 {/* Pantalla de confirmación post-registro */}
                 {mutation.isSuccess ? (
-                    <Card className="bg-zinc-900 border-zinc-800 text-center">
+                    <Card className="text-center">
                         <CardContent className="pt-6 space-y-4">
                             <div className="text-5xl">📧</div>
-                            <p className="text-white font-semibold text-lg">
+                            <p className="text-foreground font-semibold text-lg">
                                 Revisa tu correo
                             </p>
-                            <p className="text-zinc-400 text-sm">
+                            <p className="text-muted-foreground text-sm">
                                 Enviamos un enlace de activación a{" "}
-                                <span className="text-white font-medium">
+                                <span className="text-foreground font-medium">
                                     {getValues("email")}
                                 </span>
                                 . Haz clic en él para activar tu cuenta.
                             </p>
-                            <p className="text-zinc-500 text-xs">
+                            <p className="text-muted-foreground/70 text-xs">
                                 ¿No lo ves? Revisa tu carpeta de spam.
                             </p>
                         </CardContent>
                         <CardFooter className="justify-center">
-                            <p className="text-zinc-400 text-sm">
+                            <p className="text-muted-foreground text-sm">
                                 ¿Ya activaste tu cuenta?{" "}
                                 <Link
                                     to="/login"
-                                    className="text-indigo-400 hover:text-indigo-300 font-medium"
+                                    className="text-primary hover:text-primary/80 font-medium"
                                 >
                                     Inicia sesión
                                 </Link>
@@ -91,16 +91,14 @@ function RegisterPage() {
                     </Card>
                 ) : (
                     <>
-                        <p className="text-zinc-400 text-sm text-center">
+                        <p className="text-muted-foreground text-sm text-center">
                             Crea tu cuenta
                         </p>
 
-                        <Card className="bg-zinc-900 border-zinc-800">
+                        <Card>
                             <CardHeader>
-                                <CardTitle className="text-white">
-                                    Crear cuenta
-                                </CardTitle>
-                                <CardDescription className="text-zinc-400">
+                                <CardTitle>Crear cuenta</CardTitle>
+                                <CardDescription>
                                     Completa los datos para registrarte
                                 </CardDescription>
                             </CardHeader>
@@ -123,20 +121,14 @@ function RegisterPage() {
 
                                     {/* Nombre */}
                                     <div className="space-y-2">
-                                        <Label
-                                            htmlFor="name"
-                                            className="text-zinc-300"
-                                        >
-                                            Nombre
-                                        </Label>
+                                        <Label htmlFor="name">Nombre</Label>
                                         <Input
                                             id="name"
                                             placeholder="Tu nombre"
-                                            className="bg-zinc-800 border-zinc-700 text-white placeholder:text-zinc-500"
                                             {...register("name")}
                                         />
                                         {errors.name && (
-                                            <p className="text-red-400 text-xs">
+                                            <p className="text-destructive text-xs">
                                                 {errors.name.message}
                                             </p>
                                         )}
@@ -144,21 +136,15 @@ function RegisterPage() {
 
                                     {/* Email */}
                                     <div className="space-y-2">
-                                        <Label
-                                            htmlFor="email"
-                                            className="text-zinc-300"
-                                        >
-                                            Email
-                                        </Label>
+                                        <Label htmlFor="email">Email</Label>
                                         <Input
                                             id="email"
                                             type="email"
                                             placeholder="tu@email.com"
-                                            className="bg-zinc-800 border-zinc-700 text-white placeholder:text-zinc-500"
                                             {...register("email")}
                                         />
                                         {errors.email && (
-                                            <p className="text-red-400 text-xs">
+                                            <p className="text-destructive text-xs">
                                                 {errors.email.message}
                                             </p>
                                         )}
@@ -166,21 +152,17 @@ function RegisterPage() {
 
                                     {/* Password */}
                                     <div className="space-y-2">
-                                        <Label
-                                            htmlFor="password"
-                                            className="text-zinc-300"
-                                        >
+                                        <Label htmlFor="password">
                                             Contraseña
                                         </Label>
                                         <Input
                                             id="password"
                                             type="password"
                                             placeholder="Mínimo 6 caracteres"
-                                            className="bg-zinc-800 border-zinc-700 text-white placeholder:text-zinc-500"
                                             {...register("password")}
                                         />
                                         {errors.password && (
-                                            <p className="text-red-400 text-xs">
+                                            <p className="text-destructive text-xs">
                                                 {errors.password.message}
                                             </p>
                                         )}
@@ -188,21 +170,17 @@ function RegisterPage() {
 
                                     {/* Confirm Password */}
                                     <div className="space-y-2">
-                                        <Label
-                                            htmlFor="confirmPassword"
-                                            className="text-zinc-300"
-                                        >
+                                        <Label htmlFor="confirmPassword">
                                             Confirmar contraseña
                                         </Label>
                                         <Input
                                             id="confirmPassword"
                                             type="password"
                                             placeholder="Repite tu contraseña"
-                                            className="bg-zinc-800 border-zinc-700 text-white placeholder:text-zinc-500"
                                             {...register("confirmPassword")}
                                         />
                                         {errors.confirmPassword && (
-                                            <p className="text-red-400 text-xs">
+                                            <p className="text-destructive text-xs">
                                                 {errors.confirmPassword.message}
                                             </p>
                                         )}
@@ -210,7 +188,7 @@ function RegisterPage() {
 
                                     <Button
                                         type="submit"
-                                        className="w-full bg-indigo-600 hover:bg-indigo-500"
+                                        className="w-full"
                                         disabled={mutation.isPending}
                                     >
                                         {mutation.isPending
@@ -221,11 +199,11 @@ function RegisterPage() {
                             </CardContent>
 
                             <CardFooter className="justify-center">
-                                <p className="text-zinc-400 text-sm">
+                                <p className="text-muted-foreground text-sm">
                                     ¿Ya tienes cuenta?{" "}
                                     <Link
                                         to="/login"
-                                        className="text-indigo-400 hover:text-indigo-300 font-medium"
+                                        className="text-primary hover:text-primary/80 font-medium"
                                     >
                                         Inicia sesión
                                     </Link>

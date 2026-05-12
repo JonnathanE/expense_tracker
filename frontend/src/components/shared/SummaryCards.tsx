@@ -18,25 +18,26 @@ export function SummaryCards({ summary }: SummaryCardsProps) {
             label: "Balance",
             value: summary.balance,
             icon: Wallet,
-            color: summary.balance >= 0 ? "text-white" : "text-red-400",
-            bg: "bg-zinc-800",
-            border: "border-zinc-700",
+            color:
+                summary.balance >= 0 ? "text-foreground" : "text-destructive",
+            bg: "bg-muted",
+            border: "border-border",
         },
         {
             label: "Ingresos",
             value: summary.total_income,
             icon: TrendingUp,
-            color: "text-emerald-400",
-            bg: "bg-emerald-950",
-            border: "border-emerald-900",
+            color: "text-emerald-800",
+            bg: "bg-emerald-200/10",
+            border: "border-emerald-200/50",
         },
         {
             label: "Gastos",
             value: summary.total_expense,
             icon: TrendingDown,
-            color: "text-red-400",
-            bg: "bg-red-950",
-            border: "border-red-900",
+            color: "text-destructive",
+            bg: "bg-destructive/10",
+            border: "border-destructive/20",
         },
     ];
 
@@ -46,7 +47,7 @@ export function SummaryCards({ summary }: SummaryCardsProps) {
                 <Card key={label} className={`${bg} ${border} border`}>
                     <CardContent className="pt-5 pb-5">
                         <div className="flex items-center justify-between mb-3">
-                            <span className="text-sm text-zinc-400 font-medium">
+                            <span className="text-sm text-muted-foreground font-medium">
                                 {label}
                             </span>
                             <Icon className={`h-4 w-4 ${color}`} />

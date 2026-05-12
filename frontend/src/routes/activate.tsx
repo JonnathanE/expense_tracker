@@ -23,7 +23,7 @@ function ActivatePage() {
     });
 
     return (
-        <div className="min-h-screen bg-zinc-950 flex items-center justify-center p-4">
+        <div className="min-h-screen bg-background flex items-center justify-center p-4">
             <div className="w-full max-w-sm text-center space-y-6">
                 <div className="text-5xl">💰</div>
 
@@ -31,7 +31,9 @@ function ActivatePage() {
                 {isPending && token && (
                     <div className="space-y-3">
                         <div className="text-4xl animate-spin">⚙️</div>
-                        <p className="text-zinc-400">Activando tu cuenta...</p>
+                        <p className="text-muted-foreground">
+                            Activando tu cuenta...
+                        </p>
                     </div>
                 )}
 
@@ -39,10 +41,10 @@ function ActivatePage() {
                 {!token && (
                     <div className="space-y-4">
                         <div className="text-4xl">⚠️</div>
-                        <p className="text-white font-semibold">
+                        <p className="text-foreground font-semibold">
                             Link inválido
                         </p>
-                        <p className="text-zinc-400 text-sm">
+                        <p className="text-muted-foreground text-sm">
                             El link de activación no es válido. Revisa tu email.
                         </p>
                     </div>
@@ -52,16 +54,13 @@ function ActivatePage() {
                 {isSuccess && (
                     <div className="space-y-4">
                         <div className="text-5xl">✅</div>
-                        <p className="text-white font-semibold text-xl">
+                        <p className="text-foreground font-semibold text-xl">
                             ¡Cuenta activada!
                         </p>
-                        <p className="text-zinc-400 text-sm">
+                        <p className="text-muted-foreground text-sm">
                             Tu cuenta está lista. Ya puedes iniciar sesión.
                         </p>
-                        <Button
-                            asChild
-                            className="bg-indigo-600 hover:bg-indigo-500"
-                        >
+                        <Button asChild>
                             <Link to="/login">Ir al login</Link>
                         </Button>
                     </div>
@@ -71,18 +70,14 @@ function ActivatePage() {
                 {isError && (
                     <div className="space-y-4">
                         <div className="text-5xl">❌</div>
-                        <p className="text-white font-semibold">
+                        <p className="text-foreground font-semibold">
                             Error al activar
                         </p>
-                        <p className="text-zinc-400 text-sm">
+                        <p className="text-muted-foreground text-sm">
                             {(error as any)?.response?.data?.error ??
                                 "El link es inválido o ya expiró."}
                         </p>
-                        <Button
-                            asChild
-                            variant="outline"
-                            className="border-zinc-700 text-zinc-300"
-                        >
+                        <Button asChild variant="outline">
                             <Link to="/register">Crear nueva cuenta</Link>
                         </Button>
                     </div>

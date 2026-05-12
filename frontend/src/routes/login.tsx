@@ -54,23 +54,23 @@ function LoginPage() {
     const onSubmit = (data: LoginFormData) => mutation.mutate(data);
 
     return (
-        <div className="min-h-screen bg-zinc-950 flex items-center justify-center p-4">
+        <div className="min-h-screen bg-background flex items-center justify-center p-4">
             <div className="w-full max-w-sm space-y-6">
                 {/* Logo */}
                 <div className="text-center space-y-2">
                     <div className="text-5xl">💰</div>
-                    <h1 className="text-2xl font-bold text-white">
+                    <h1 className="text-2xl font-bold text-foreground">
                         Expense Tracker
                     </h1>
-                    <p className="text-zinc-400 text-sm">Ingresa a tu cuenta</p>
+                    <p className="text-muted-foreground text-sm">
+                        Ingresa a tu cuenta
+                    </p>
                 </div>
 
-                <Card className="bg-zinc-900 border-zinc-800">
+                <Card>
                     <CardHeader>
-                        <CardTitle className="text-white">
-                            Iniciar sesión
-                        </CardTitle>
-                        <CardDescription className="text-zinc-400">
+                        <CardTitle>Iniciar sesión</CardTitle>
+                        <CardDescription>
                             Ingresa tu email y contraseña
                         </CardDescription>
                     </CardHeader>
@@ -93,21 +93,15 @@ function LoginPage() {
 
                             {/* Email */}
                             <div className="space-y-2">
-                                <Label
-                                    htmlFor="email"
-                                    className="text-zinc-300"
-                                >
-                                    Email
-                                </Label>
+                                <Label htmlFor="email">Email</Label>
                                 <Input
                                     id="email"
                                     type="email"
                                     placeholder="tu@email.com"
-                                    className="bg-zinc-800 border-zinc-700 text-white placeholder:text-zinc-500"
                                     {...register("email")}
                                 />
                                 {errors.email && (
-                                    <p className="text-red-400 text-xs">
+                                    <p className="text-destructive text-xs">
                                         {errors.email.message}
                                     </p>
                                 )}
@@ -115,21 +109,15 @@ function LoginPage() {
 
                             {/* Password */}
                             <div className="space-y-2">
-                                <Label
-                                    htmlFor="password"
-                                    className="text-zinc-300"
-                                >
-                                    Contraseña
-                                </Label>
+                                <Label htmlFor="password">Contraseña</Label>
                                 <Input
                                     id="password"
                                     type="password"
                                     placeholder="••••••••"
-                                    className="bg-zinc-800 border-zinc-700 text-white placeholder:text-zinc-500"
                                     {...register("password")}
                                 />
                                 {errors.password && (
-                                    <p className="text-red-400 text-xs">
+                                    <p className="text-destructive text-xs">
                                         {errors.password.message}
                                     </p>
                                 )}
@@ -137,7 +125,7 @@ function LoginPage() {
 
                             <Button
                                 type="submit"
-                                className="w-full bg-indigo-600 hover:bg-indigo-500"
+                                className="w-full"
                                 disabled={mutation.isPending}
                             >
                                 {mutation.isPending
@@ -148,11 +136,11 @@ function LoginPage() {
                     </CardContent>
 
                     <CardFooter className="justify-center">
-                        <p className="text-zinc-400 text-sm">
+                        <p className="text-muted-foreground text-sm">
                             ¿No tienes cuenta?{" "}
                             <Link
                                 to="/register"
-                                className="text-indigo-400 hover:text-indigo-300 font-medium"
+                                className="text-primary hover:text-primary/80 font-medium"
                             >
                                 Regístrate
                             </Link>

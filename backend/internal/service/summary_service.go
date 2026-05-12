@@ -51,7 +51,8 @@ func (s *SummaryService) Get(ctx context.Context, userID, month string) (*model.
 	summary.Balance = summary.TotalIncome - summary.TotalExpense
 
 	// ── 2. Desglose por categoría ─────────────────────────────────────────────
-	// LEFT JOIN para incluir categorías aunque no tengan transacciones ese mes
+	// LEFT JOIN para incluir categorías aunque no tengan transacciones ese mes.
+	// UNION ALL con una segunda parte que captura transacciones sin categoría.
 	catRows, err := s.db.Query(ctx,
 		`SELECT
 		     c.id,
@@ -68,6 +69,23 @@ func (s *SummaryService) Get(ctx context.Context, userID, month string) (*model.
 		     AND TO_CHAR(t.date, 'YYYY-MM') = $2
 		 WHERE c.user_id = $1
 		 GROUP BY c.id, c.name, c.icon, c.color, c.type
+
+		 UNION ALL
+
+		 SELECT
+		     NULL,
+		     NULL,
+		     NULL,
+		     NULL,
+		     t.type,
+		     COALESCE(SUM(t.amount), 0),
+		     COUNT(t.id)
+		 FROM transactions t
+		 WHERE t.user_id = $1
+		   AND t.category_id IS NULL
+		   AND TO_CHAR(t.date, 'YYYY-MM') = $2
+		 GROUP BY t.type
+
 		 ORDER BY total DESC`,
 		userID, month,
 	)

@@ -14,10 +14,12 @@ function DashboardPage() {
     return (
         <div className="p-8 space-y-8 max-w-5xl mx-auto">
             {/* ── Header ────────────────────────────────────────────── */}
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold text-white">Dashboard</h1>
-                    <p className="text-zinc-400 text-sm mt-1">
+                    <h1 className="text-2xl font-bold text-foreground">
+                        Dashboard
+                    </h1>
+                    <p className="text-muted-foreground text-sm mt-1">
                         Resumen de tus finanzas
                     </p>
                 </div>
@@ -32,18 +34,18 @@ function DashboardPage() {
                         {[1, 2, 3].map((i) => (
                             <div
                                 key={i}
-                                className="h-24 rounded-lg bg-zinc-800 animate-pulse"
+                                className="h-24 rounded-lg bg-muted animate-pulse"
                             />
                         ))}
                     </div>
-                    <div className="h-48 rounded-lg bg-zinc-800 animate-pulse" />
+                    <div className="h-48 rounded-lg bg-muted animate-pulse" />
                 </div>
             )}
 
             {/* ── Error ─────────────────────────────────────────────── */}
             {isError && (
                 <div className="text-center py-16">
-                    <p className="text-red-400 text-sm">
+                    <p className="text-destructive text-sm">
                         Error cargando el resumen. Intenta de nuevo.
                     </p>
                 </div>
@@ -55,7 +57,7 @@ function DashboardPage() {
                     <SummaryCards summary={summary} />
 
                     <div className="space-y-4">
-                        <h2 className="text-lg font-semibold text-white">
+                        <h2 className="text-lg font-semibold text-foreground">
                             Por categoría
                         </h2>
                         <CategoryBreakdown categories={summary.by_category} />

@@ -24,20 +24,20 @@ export function MonthPicker() {
             <Button
                 variant="outline"
                 size="icon"
-                className="h-8 w-8 border-zinc-700 bg-zinc-800 hover:bg-zinc-700"
+                className="h-8 w-8"
                 onClick={() => navigate("prev")}
             >
                 <ChevronLeft className="h-4 w-4" />
             </Button>
 
-            <span className="text-sm font-medium text-zinc-200 capitalize w-36 text-center">
+            <span className="text-sm font-medium text-foreground capitalize w-36 text-center">
                 {formatted}
             </span>
 
             <Button
                 variant="outline"
                 size="icon"
-                className="h-8 w-8 border-zinc-700 bg-zinc-800 hover:bg-zinc-700"
+                className="h-8 w-8"
                 onClick={() => navigate("next")}
             >
                 <ChevronRight className="h-4 w-4" />

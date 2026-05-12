@@ -165,3 +165,67 @@ La aplicación queda disponible en `http://localhost:5173`.
 | Método | Ruta  | Descripción                     |
 |--------|-------|---------------------------------|
 | `GET`  | `/me` | Retorna el ID del usuario autenticado |
+
+---
+
+## Conectarse a la DB DOCKER
+
+```bash
+docker exec -it expense_tracker_db psql -U expense_user -d expense_tracker
+```
+
+Eso te abre la consola interactiva de PostgreSQL. Desde ahí puedes correr cualquier query.
+
+### Comandos útiles dentro de psql
+
+```sql
+-- Ver todas las tablas
+\dt
+
+-- Ver columnas de una tabla
+\d users
+\d categories
+\d transactions
+\d budgets
+
+-- Salir
+\q
+```
+
+
+### Selects por tabla
+
+```sql
+-- Usuarios
+SELECT id, name, email, is_active, created_at FROM users;
+
+-- Categorías
+SELECT id, name, type, icon, color FROM categories;
+
+-- Transacciones
+SELECT id, amount, type, description, date FROM transactions;
+
+-- Transacciones con nombre de categoría
+SELECT t.id, t.amount, t.type, t.description, t.date, c.name AS category
+FROM transactions t
+LEFT JOIN categories c ON c.id = t.category_id
+ORDER BY t.date DESC;
+
+-- Presupuestos
+SELECT id, amount, month FROM budgets;
+```
+
+
+### Sin entrar a la consola interactiva
+
+Si prefieres correr un query directo desde la terminal sin abrir psql:
+
+```bash
+# Cualquier query
+docker exec -it expense_tracker_db psql -U expense_user -d expense_tracker \
+  -c "SELECT id, name, email, is_active FROM users;"
+
+# Transacciones del mes actual
+docker exec -it expense_tracker_db psql -U expense_user -d expense_tracker \
+  -c "SELECT amount, type, description, date FROM transactions ORDER BY date DESC;"
+```
