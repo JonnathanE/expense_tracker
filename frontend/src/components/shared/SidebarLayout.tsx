@@ -1,6 +1,18 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { ArrowLeftRight, LayoutDashboard, LogOut, Tag } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { ArrowLeftRight, LayoutDashboard, Tag } from "lucide-react";
+import { NavUser } from "@/components/shared/NavUser";
+import {
+    Sidebar,
+    SidebarContent,
+    SidebarFooter,
+    SidebarHeader,
+    SidebarInset,
+    SidebarMenu,
+    SidebarMenuButton,
+    SidebarMenuItem,
+    SidebarProvider,
+    SidebarTrigger,
+} from "@/components/ui/sidebar";
 import { useAuthStore } from "@/store/authStore";
 
 const NAV_ITEMS = [
@@ -14,71 +26,63 @@ interface SidebarLayoutProps {
 }
 
 export function SidebarLayout({ children }: SidebarLayoutProps) {
-    const { user, logout } = useAuthStore();
+    const { user } = useAuthStore();
     const routerState = useRouterState();
     const currentPath = routerState.location.pathname;
 
     return (
-        <div className="flex min-h-screen bg-zinc-950 text-zinc-100">
-            {/* ── Sidebar ───────────────────────────────────────────────── */}
-            <aside className="w-56 shrink-0 border-r border-zinc-800 flex flex-col">
+        <SidebarProvider>
+            <Sidebar collapsible="icon" side="left">
                 {/* Brand */}
-                <div className="flex items-center gap-3 px-5 py-6 border-b border-zinc-800">
-                    <span className="text-2xl">💰</span>
-                    <span className="font-bold text-white text-lg">
-                        Expense
-                    </span>
-                </div>
+                <SidebarHeader>
+                    <SidebarMenu>
+                        <SidebarMenuItem>
+                            <SidebarMenuButton size="lg" asChild>
+                                <Link to="/">
+                                    <span className="text-xl">💰</span>
+                                    <span className="font-bold">Expense</span>
+                                </Link>
+                            </SidebarMenuButton>
+                        </SidebarMenuItem>
+                    </SidebarMenu>
+                </SidebarHeader>
 
                 {/* Nav */}
-                <nav className="flex-1 px-3 py-4 space-y-1">
-                    {NAV_ITEMS.map(({ to, label, icon: Icon }) => {
-                        const isActive = currentPath === to;
-                        return (
-                            <Link
-                                key={to}
-                                to={to}
-                                className={`
-                  flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium
-                  transition-colors duration-150
-                  ${
-                      isActive
-                          ? "bg-indigo-600 text-white"
-                          : "text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800"
-}
-                `}
-                            >
-                                <Icon className="h-4 w-4 shrink-0" />
-                                {label}
-                            </Link>
-                        );
-                    })}
-                </nav>
+                <SidebarContent>
+                    <SidebarMenu>
+                        {NAV_ITEMS.map(({ to, label, icon: Icon }) => (
+                            <SidebarMenuItem key={to}>
+                                <SidebarMenuButton
+                                    asChild
+                                    isActive={currentPath === to}
+                                    tooltip={label}
+                                    className="py-7"
+                                >
+                                    <Link to={to}>
+                                        <Icon />
+                                        <span>{label}</span>
+                                    </Link>
+                                </SidebarMenuButton>
+                            </SidebarMenuItem>
+                        ))}
+                    </SidebarMenu>
+                </SidebarContent>
 
-                {/* Footer: usuario + logout */}
-                <div className="px-4 py-4 border-t border-zinc-800 space-y-3">
-                    <div className="px-1">
-                        <p className="text-sm font-medium text-zinc-200 truncate">
-                            {user?.name}
-                        </p>
-                        <p className="text-xs text-zinc-500 truncate">
-                            {user?.email}
-                        </p>
+                {/* Footer */}
+                <SidebarFooter>
+                    <NavUser user={user} />
+                </SidebarFooter>
+            </Sidebar>
+
+            {/* Contenido principal */}
+            <SidebarInset>
+                <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
+                    <div className="flex items-center gap-2 px-4">
+                        <SidebarTrigger className="-ml-1" />
                     </div>
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        className="w-full justify-start text-zinc-400 hover:text-red-400 hover:bg-zinc-800 gap-2"
-                        onClick={logout}
-                    >
-                        <LogOut className="h-4 w-4" />
-                        Cerrar sesión
-                    </Button>
-                </div>
-            </aside>
-
-            {/* ── Contenido principal ───────────────────────────────────── */}
-            <main className="flex-1 overflow-auto">{children}</main>
-        </div>
+                </header>
+                <main className="flex-1 overflow-auto">{children}</main>
+            </SidebarInset>
+        </SidebarProvider>
     );
 }

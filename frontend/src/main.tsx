@@ -3,6 +3,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { createRouter, RouterProvider } from "@tanstack/react-router";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 // import App from "./App.tsx";
 
@@ -32,10 +33,12 @@ declare module "@tanstack/react-router" {
 createRoot(document.getElementById("root")!).render(
     <StrictMode>
         <QueryClientProvider client={queryClient}>
-            <RouterProvider router={router} />
-            {import.meta.env.DEV && (
-                <ReactQueryDevtools initialIsOpen={false} />
-            )}
+            <TooltipProvider>
+                <RouterProvider router={router} />
+                {import.meta.env.DEV && (
+                    <ReactQueryDevtools initialIsOpen={false} />
+                )}
+            </TooltipProvider>
         </QueryClientProvider>
     </StrictMode>,
 );
