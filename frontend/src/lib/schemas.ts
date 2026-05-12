@@ -28,5 +28,26 @@ export const registerSchema = z
         path: ["confirmPassword"],
     });
 
+export const categorySchema = z.object({
+    name: z.string().min(1, "El nombre es requerido"),
+    type: z.enum(["income", "expense"], {
+        required_error: "Selecciona un tipo",
+    }),
+    icon: z.string().min(1, "Selecciona un ícono"),
+    color: z.string().min(1, "Selecciona un color"),
+});
+
+export const transactionSchema = z.object({
+    category_id: z.string().nullable(),
+    amount: z
+        .number({ invalid_type_error: "Ingresa un monto válido" })
+        .positive("El monto debe ser mayor a 0"),
+    type: z.enum(["income", "expense"]),
+    description: z.string(),
+    date: z.string().min(1, "La fecha es requerida"),
+});
+
 export type LoginFormData = z.infer<typeof loginSchema>;
 export type RegisterFormData = z.infer<typeof registerSchema>;
+export type CategoryFormData = z.infer<typeof categorySchema>;
+export type TransactionFormData = z.infer<typeof transactionSchema>;
