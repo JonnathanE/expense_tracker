@@ -1,4 +1,5 @@
 import { Pencil, Trash2 } from "lucide-react";
+import { CategoryIcon } from "@/components/shared/CategoryIcon";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { Category } from "@/types";
@@ -19,16 +20,7 @@ export function CategoryCard({
     return (
         <div className="flex items-center justify-between px-4 py-3 rounded-lg bg-card border border-border group">
             <div className="flex items-center gap-3">
-                <div
-                    className="w-9 h-9 rounded-lg flex items-center justify-center text-lg"
-                    style={{
-                        backgroundColor: `${category.color}22`,
-                        borderColor: category.color,
-                        border: `1px solid ${category.color}55`,
-                    }}
-                >
-                    {category.icon}
-                </div>
+                <CategoryIcon icon={category.icon} color={category.color} />
                 <div>
                     <p className="text-sm font-medium text-foreground">
                         {category.name}

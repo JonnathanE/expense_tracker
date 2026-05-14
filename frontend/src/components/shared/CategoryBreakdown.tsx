@@ -1,3 +1,4 @@
+import { CategoryIcon } from "@/components/shared/CategoryIcon";
 import type { CategorySummary } from "@/types";
 
 interface CategoryBreakdownProps {
@@ -62,16 +63,10 @@ function CategoryList({
                             className="flex items-center justify-between px-4 py-3 rounded-lg bg-card border border-border"
                         >
                             <div className="flex items-center gap-3">
-                                <span
-                                    className="text-xl w-9 h-9 rounded-lg flex items-center justify-center"
-                                    style={{
-                                        backgroundColor: `${cat.color}22`,
-                                        borderColor: cat.color,
-                                        border: `1px solid ${cat.color}55`,
-                                    }}
-                                >
-                                    {cat.icon}
-                                </span>
+                                <CategoryIcon
+                                    icon={cat.icon}
+                                    color={cat.color}
+                                />
                                 <div>
                                     <p className="text-sm font-medium text-foreground">
                                         {cat.category_name || "Sin categoría"}

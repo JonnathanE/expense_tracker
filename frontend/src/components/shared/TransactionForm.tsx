@@ -1,8 +1,24 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Check, ChevronsUpDown } from "lucide-react";
+import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { CategoryIcon } from "@/components/shared/CategoryIcon";
 import { Button } from "@/components/ui/button";
+import {
+    Command,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+    CommandList,
+} from "@/components/ui/command";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover";
 import {
     Select,
     SelectContent,
@@ -12,13 +28,86 @@ import {
 } from "@/components/ui/select";
 import { useCategories } from "@/hooks/useCategories";
 import { type TransactionFormData, transactionSchema } from "@/lib/schemas";
-import type { Transaction } from "@/types";
+import type { Category, Transaction } from "@/types";
 
 interface TransactionFormProps {
     onSubmit: (data: TransactionFormData) => void;
     onCancel: () => void;
     isPending: boolean;
     defaultValues?: Transaction;
+}
+
+function CategorySelect({
+    categories,
+    value,
+    onChange,
+}: {
+    categories: Category[];
+    value: string | null;
+    onChange: (id: string | null) => void;
+}) {
+    const [open, setOpen] = useState(false);
+    const selected = categories.find((c) => c.id === value) ?? null;
+
+    return (
+        <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger asChild>
+                <Button
+                    variant="outline"
+                    role="combobox"
+                    className="w-full justify-between font-normal"
+                >
+                    {selected ? (
+                        <span className="flex items-center gap-2">
+                            <CategoryIcon
+                                icon={selected.icon}
+                                color={selected.color}
+                                size="sm"
+                            />
+                            {selected.name}
+                        </span>
+                    ) : (
+                        <span className="text-muted-foreground">
+                            Sin categoría
+                        </span>
+                    )}
+                    <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-full p-0" align="start">
+                <Command>
+                    <CommandInput placeholder="Buscar categoría..." />
+                    <CommandList>
+                        <CommandEmpty>Sin resultados.</CommandEmpty>
+                        <CommandGroup>
+                            {categories.map((c) => (
+                                <CommandItem
+                                    key={c.id}
+                                    value={c.name}
+                                    onSelect={() => {
+                                        onChange(c.id === value ? null : c.id);
+                                        setOpen(false);
+                                    }}
+                                >
+                                    <span className="flex items-center gap-2 flex-1">
+                                        <CategoryIcon
+                                            icon={c.icon}
+                                            color={c.color}
+                                            size="sm"
+                                        />
+                                        {c.name}
+                                    </span>
+                                    {value === c.id && (
+                                        <Check className="h-4 w-4 text-primary" />
+                                    )}
+                                </CommandItem>
+                            ))}
+                        </CommandGroup>
+                    </CommandList>
+                </Command>
+            </PopoverContent>
+        </Popover>
+    );
 }
 
 export function TransactionForm({
@@ -71,7 +160,7 @@ export function TransactionForm({
                             onValueChange={field.onChange}
                             defaultValue={field.value}
                         >
-                            <SelectTrigger>
+                            <SelectTrigger className="w-full">
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
@@ -111,27 +200,11 @@ export function TransactionForm({
                     control={control}
                     name="category_id"
                     render={({ field }) => (
-                        <Select
-                            onValueChange={field.onChange}
-                            defaultValue={field.value ?? undefined}
-                        >
-                            <SelectTrigger>
-                                <SelectValue placeholder="Sin categoría" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {filteredCategories.length === 0 ? (
-                                    <SelectItem value="none" disabled>
-                                        No hay categorías de este tipo
-                                    </SelectItem>
-                                ) : (
-                                    filteredCategories.map((c) => (
-                                        <SelectItem key={c.id} value={c.id}>
-                                            {c.icon} {c.name}
-                                        </SelectItem>
-                                    ))
-                                )}
-                            </SelectContent>
-                        </Select>
+                        <CategorySelect
+                            categories={filteredCategories}
+                            value={field.value}
+                            onChange={field.onChange}
+                        />
                     )}
                 />
             </div>
