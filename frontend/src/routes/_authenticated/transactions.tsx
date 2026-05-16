@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Plus } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 import { MonthPicker } from "@/components/shared/MonthPicker";
 import { TransactionForm } from "@/components/shared/TransactionForm";
 import { TransactionItem } from "@/components/shared/TransactionItem";
@@ -48,10 +49,20 @@ function TransactionsPage() {
         if (editing) {
             updateMutation.mutate(
                 { id: editing.id, data },
-                { onSuccess: closeModal },
+                {
+                    onSuccess: () => {
+                        toast.success("Transacción actualizada");
+                        closeModal();
+                    },
+                },
             );
         } else {
-            createMutation.mutate(data, { onSuccess: closeModal });
+            createMutation.mutate(data, {
+                onSuccess: () => {
+                    toast.success("Transacción creada");
+                    closeModal();
+                },
+            });
         }
     };
 
@@ -68,6 +79,7 @@ function TransactionsPage() {
     const handleConfirmDelete = () => {
         if (!pendingDeleteId) return;
         deleteMutation.mutate(pendingDeleteId, {
+            onSuccess: () => toast.success("Transacción eliminada"),
             onSettled: () => setPendingDeleteId(null),
         });
     };

@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Plus } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 import { CategoryCard } from "@/components/shared/CategoryCard";
 import { CategoryForm } from "@/components/shared/CategoryForm";
 import {
@@ -47,10 +48,20 @@ function CategoriesPage() {
         if (editing) {
             updateMutation.mutate(
                 { id: editing.id, data },
-                { onSuccess: closeModal },
+                {
+                    onSuccess: () => {
+                        toast.success("Categoría actualizada");
+                        closeModal();
+                    },
+                },
             );
         } else {
-            createMutation.mutate(data, { onSuccess: closeModal });
+            createMutation.mutate(data, {
+                onSuccess: () => {
+                    toast.success("Categoría creada");
+                    closeModal();
+                },
+            });
         }
     };
 
@@ -67,6 +78,7 @@ function CategoriesPage() {
     const handleConfirmDelete = () => {
         if (!pendingDeleteId) return;
         deleteMutation.mutate(pendingDeleteId, {
+            onSuccess: () => toast.success("Categoría eliminada"),
             onSettled: () => setPendingDeleteId(null),
         });
     };

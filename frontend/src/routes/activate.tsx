@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import axios from "axios";
 import { authApi } from "@/api/auth";
 import { Button } from "@/components/ui/button";
 
@@ -74,8 +75,10 @@ function ActivatePage() {
                             Error al activar
                         </p>
                         <p className="text-muted-foreground text-sm">
-                            {(error as any)?.response?.data?.error ??
-                                "El link es inválido o ya expiró."}
+                            {axios.isAxiosError(error)
+                                ? (error.response?.data?.error ??
+                                  "El link es inválido o ya expiró.")
+                                : "El link es inválido o ya expiró."}
                         </p>
                         <Button asChild variant="outline">
                             <Link to="/register">Crear nueva cuenta</Link>

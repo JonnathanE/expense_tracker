@@ -6,6 +6,7 @@ import {
     redirect,
     useNavigate,
 } from "@tanstack/react-router";
+import axios from "axios";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { authApi } from "@/api/auth";
@@ -86,9 +87,11 @@ function LoginPage() {
                             {mutation.isError && (
                                 <Alert variant="destructive">
                                     <AlertDescription>
-                                        {(mutation.error as any)?.response?.data
-                                            ?.error ??
-                                            "Error al iniciar sesión"}
+                                        {axios.isAxiosError(mutation.error)
+                                            ? (mutation.error.response?.data
+                                                  ?.error ??
+                                              "Error al iniciar sesión")
+                                            : "Error al iniciar sesión"}
                                     </AlertDescription>
                                 </Alert>
                             )}

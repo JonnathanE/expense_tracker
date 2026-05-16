@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { createFileRoute, Link, redirect } from "@tanstack/react-router";
+import axios from "axios";
 import { useForm } from "react-hook-form";
 import { authApi } from "@/api/auth";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -112,9 +113,13 @@ function RegisterPage() {
                                     {mutation.isError && (
                                         <Alert variant="destructive">
                                             <AlertDescription>
-                                                {(mutation.error as any)
-                                                    ?.response?.data?.error ??
-                                                    "Error al registrarse"}
+                                                {axios.isAxiosError(
+                                                    mutation.error,
+                                                )
+                                                    ? (mutation.error.response
+                                                          ?.data?.error ??
+                                                      "Error al registrarse")
+                                                    : "Error al registrarse"}
                                             </AlertDescription>
                                         </Alert>
                                     )}

@@ -20,15 +20,14 @@ api.interceptors.request.use((config) => {
 // ── Response: maneja 401 intentando refresh ───────────────────────────────────
 let isRefreshing = false;
 let pendingQueue: Array<{
-    resolve: (token: string) => void;
+    resolve: (token: string | null) => void;
     reject: (error: unknown) => void;
 }> = [];
 
-// Procesa las peticiones que esperaban el nuevo token
 const processPendingQueue = (error: unknown, token: string | null) => {
     pendingQueue.forEach(({ resolve, reject }) => {
         if (error) reject(error);
-        else resolve(token!);
+        else resolve(token);
     });
     pendingQueue = [];
 };
