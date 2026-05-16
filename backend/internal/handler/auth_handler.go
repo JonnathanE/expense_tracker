@@ -5,20 +5,28 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/JonnathanE/expense_tracker/backend/internal/middleware"
 	"github.com/JonnathanE/expense_tracker/backend/internal/service"
 )
 
 type AuthHandler struct {
-	userService  *service.UserService
-	emailService *service.EmailService
-	jwtService   *service.JWTService
+	userService    *service.UserService
+	emailService   *service.EmailService
+	jwtService     *service.JWTService
+	refreshService *service.RefreshTokenService
 }
 
-func NewAuthHandler(userService *service.UserService, emailService *service.EmailService, jwtService *service.JWTService) *AuthHandler {
+func NewAuthHandler(
+	userService *service.UserService,
+	emailService *service.EmailService,
+	jwtService *service.JWTService,
+	refreshService *service.RefreshTokenService,
+) *AuthHandler {
 	return &AuthHandler{
-		userService:  userService,
-		emailService: emailService,
-		jwtService:   jwtService,
+		userService:    userService,
+		emailService:   emailService,
+		jwtService:     jwtService,
+		refreshService: refreshService,
 	}
 }
 
@@ -115,13 +123,15 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	req.Email = strings.TrimSpace(strings.ToLower(req.Email))
-
 	if req.Email == "" || req.Password == "" {
 		respondError(w, http.StatusBadRequest, "email y contraseña son requeridos")
 		return
 	}
 
-	result, err := h.userService.Login(r.Context(), req.Email, req.Password, h.jwtService)
+	result, err := h.userService.Login(
+		r.Context(), req.Email, req.Password,
+		h.jwtService, h.refreshService,
+	)
 	if err != nil {
 		if strings.Contains(err.Error(), "no activada") {
 			respondError(w, http.StatusForbidden, err.Error())
@@ -132,11 +142,65 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	respondJSON(w, http.StatusOK, map[string]any{
-		"token": result.Token,
+		"access_token":  result.AccessToken,
+		"refresh_token": result.RefreshToken,
 		"user": map[string]any{
 			"id":    result.User.ID,
 			"name":  result.User.Name,
 			"email": result.User.Email,
 		},
+	})
+}
+
+// ── POST /auth/refresh ────────────────────────────────────────────────────────
+
+type refreshRequest struct {
+	RefreshToken string `json:"refresh_token"`
+}
+
+func (h *AuthHandler) Refresh(w http.ResponseWriter, r *http.Request) {
+	var req refreshRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		respondError(w, http.StatusBadRequest, "datos inválidos")
+		return
+	}
+
+	if req.RefreshToken == "" {
+		respondError(w, http.StatusBadRequest, "refresh token requerido")
+		return
+	}
+
+	// Rotar el refresh token
+	userID, newRefreshToken, err := h.refreshService.Rotate(r.Context(), req.RefreshToken)
+	if err != nil {
+		respondError(w, http.StatusUnauthorized, err.Error())
+		return
+	}
+
+	// Generar nuevo access token
+	newAccessToken, err := h.jwtService.Generate(userID)
+	if err != nil {
+		respondError(w, http.StatusInternalServerError, "error generando token")
+		return
+	}
+
+	respondJSON(w, http.StatusOK, map[string]string{
+		"access_token":  newAccessToken,
+		"refresh_token": newRefreshToken,
+	})
+}
+
+// ── POST /auth/logout ─────────────────────────────────────────────────────────
+
+func (h *AuthHandler) Logout(w http.ResponseWriter, r *http.Request) {
+	userID := middleware.GetUserID(r)
+
+	if err := h.refreshService.RevokeAll(r.Context(), userID); err != nil {
+		respondError(w, http.StatusInternalServerError, "error cerrando sesión")
+		return
+	}
+
+	respondJSON(w, http.StatusOK, map[string]string{
+		"message": "Sesión cerrada correctamente",
 	})
 }

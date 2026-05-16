@@ -8,37 +8,39 @@ interface User {
 }
 
 interface AuthState {
-    token: string | null;
+    accessToken: string | null;
+    refreshToken: string | null;
     user: User | null;
     isAuthenticated: boolean;
-    setAuth: (token: string, user: User) => void;
+
+    setAuth: (accessToken: string, refreshToken: string, user: User) => void;
+    setAccessToken: (accessToken: string, refreshToken: string) => void;
     logout: () => void;
 }
 
 export const useAuthStore = create<AuthState>()(
-    // persist guarda el estado en localStorage automáticamente
     persist(
         (set) => ({
-            token: null,
+            accessToken: null,
+            refreshToken: null,
             user: null,
             isAuthenticated: false,
 
-            setAuth: (token, user) =>
-                set({
-                    token,
-                    user,
-                    isAuthenticated: true,
-                }),
+            setAuth: (accessToken, refreshToken, user) =>
+                set({ accessToken, refreshToken, user, isAuthenticated: true }),
+
+            // Solo actualiza los tokens (después de un refresh)
+            setAccessToken: (accessToken, refreshToken) =>
+                set({ accessToken, refreshToken }),
 
             logout: () =>
                 set({
-                    token: null,
+                    accessToken: null,
+                    refreshToken: null,
                     user: null,
                     isAuthenticated: false,
                 }),
         }),
-        {
-            name: "auth-storage", // clave en localStorage
-        },
+        { name: "auth-storage" },
     ),
 );

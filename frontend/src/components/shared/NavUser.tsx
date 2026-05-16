@@ -1,5 +1,7 @@
 import { useNavigate } from "@tanstack/react-router";
 import { ChevronsUpDown, LogOut, Moon, Sun } from "lucide-react";
+import { toast } from "sonner";
+import { authApi } from "@/api/auth";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
     DropdownMenu,
@@ -40,9 +42,16 @@ export function NavUser({ user }: NavUserProps) {
     const { theme, toggle } = useTheme();
     const navigate = useNavigate();
 
-    const handleLogout = () => {
-        logout();
-        navigate({ to: "/login" });
+    const handleLogout = async () => {
+        try {
+            await authApi.logout();
+        } catch {
+            // Si falla igual limpiamos el estado local
+        } finally {
+            logout();
+            toast.success("Sesión cerrada correctamente");
+            navigate({ to: "/login" });
+        }
     };
 
     return (

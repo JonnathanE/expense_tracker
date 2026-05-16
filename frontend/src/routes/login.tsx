@@ -7,6 +7,7 @@ import {
     useNavigate,
 } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { authApi } from "@/api/auth";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -46,7 +47,8 @@ function LoginPage() {
     const mutation = useMutation({
         mutationFn: authApi.login,
         onSuccess: (data) => {
-            setAuth(data.token, data.user);
+            setAuth(data.access_token, data.refresh_token, data.user);
+            toast.success(`Bienvenido, ${data.user.name}`);
             navigate({ to: "/" });
         },
     });

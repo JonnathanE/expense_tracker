@@ -19,6 +19,22 @@ export const authApi = {
         return res.data;
     },
 
+    refresh: async (
+        refreshToken: string,
+    ): Promise<{
+        access_token: string;
+        refresh_token: string;
+    }> => {
+        const res = await api.post("/auth/refresh", {
+            refresh_token: refreshToken,
+        });
+        return res.data;
+    },
+
+    logout: async (): Promise<void> => {
+        await api.post("/auth/logout");
+    },
+
     activate: async (token: string): Promise<{ message: string }> => {
         const res = await api.get(`/auth/activate?token=${token}`);
         return res.data;

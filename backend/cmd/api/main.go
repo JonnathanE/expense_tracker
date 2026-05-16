@@ -29,12 +29,13 @@ func main() {
 	userService := service.NewUserService(pool)
 	emailService := service.NewEmailService(cfg.FrontendURL)
 	jwtService := service.NewJWTService(cfg.JWTSecret)
+	refreshService := service.NewRefreshTokenService(pool)
 	categoryService := service.NewCategoryService(pool)
 	transactionService := service.NewTransactionService(pool)
 	summaryService := service.NewSummaryService(pool)
 
 	// Handlers
-	authHandler := handler.NewAuthHandler(userService, emailService, jwtService)
+	authHandler := handler.NewAuthHandler(userService, emailService, jwtService, refreshService)
 	categoryHandler := handler.NewCategoryHandler(categoryService)
 	transactionHandler := handler.NewTransactionHandler(transactionService)
 	summaryHandler := handler.NewSummaryHandler(summaryService)
@@ -62,6 +63,7 @@ func main() {
 	r.Post("/auth/register", authHandler.Register)
 	r.Get("/auth/activate", authHandler.Activate)
 	r.Post("/auth/login", authHandler.Login)
+	r.Post("/auth/refresh", authHandler.Refresh)
 
 	// Rutas protegidas
 	r.Group(func(r chi.Router) {
@@ -72,6 +74,9 @@ func main() {
 			w.Header().Set("Content-Type", "application/json")
 			w.Write([]byte(`{"user_id":"` + userID + `"}`))
 		})
+
+		// Logout
+		r.Post("/auth/logout", authHandler.Logout)
 
 		// Categorías
 		r.Get("/categories", categoryHandler.List)

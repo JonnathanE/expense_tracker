@@ -112,13 +112,18 @@ func (s *UserService) Activate(ctx context.Context, token string) error {
 }
 
 type LoginResult struct {
-	User  *model.User
-	Token string
+	User         *model.User
+	AccessToken  string
+	RefreshToken string
 }
 
 // Login verifica credenciales y retorna el usuario + JWT
-func (s *UserService) Login(ctx context.Context, email, password string, jwtService *JWTService) (*LoginResult, error) {
-	// 1. Buscar usuario por email
+func (s *UserService) Login(
+	ctx context.Context,
+	email, password string,
+	jwtService *JWTService,
+	refreshService *RefreshTokenService,
+) (*LoginResult, error) {
 	var user model.User
 	var hashedPassword string
 
@@ -131,25 +136,32 @@ func (s *UserService) Login(ctx context.Context, email, password string, jwtServ
 		&user.IsActive, &user.CreatedAt, &user.UpdatedAt,
 	)
 	if err != nil {
-		// No revelar si el email existe o no (seguridad)
 		return nil, fmt.Errorf("credenciales inválidas")
 	}
 
-	// 2. Verificar que la cuenta esté activa
 	if !user.IsActive {
 		return nil, fmt.Errorf("cuenta no activada, revisa tu email")
 	}
 
-	// 3. Comparar contraseña
 	if err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password)); err != nil {
 		return nil, fmt.Errorf("credenciales inválidas")
 	}
 
-	// 4. Generar JWT
-	token, err := jwtService.Generate(user.ID)
+	// Generar access token
+	accessToken, err := jwtService.Generate(user.ID)
 	if err != nil {
 		return nil, fmt.Errorf("error generando sesión: %w", err)
 	}
 
-	return &LoginResult{User: &user, Token: token}, nil
+	// Generar refresh token
+	refreshToken, err := refreshService.Generate(ctx, user.ID)
+	if err != nil {
+		return nil, fmt.Errorf("error generando sesión: %w", err)
+	}
+
+	return &LoginResult{
+		User:         &user,
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
+	}, nil
 }

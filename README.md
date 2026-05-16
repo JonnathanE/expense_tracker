@@ -187,6 +187,7 @@ Eso te abre la consola interactiva de PostgreSQL. Desde ahí puedes correr cualq
 \d categories
 \d transactions
 \d budgets
+\d refresh_tokens
 
 -- Salir
 \q
@@ -213,6 +214,10 @@ ORDER BY t.date DESC;
 
 -- Presupuestos
 SELECT id, amount, month FROM budgets;
+
+-- Refresh tokens
+SELECT id, user_id, token, expires_at, created_at FROM refresh_tokens;
+
 ```
 
 

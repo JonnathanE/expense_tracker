@@ -20,14 +20,14 @@ type Claims struct {
 	jwt.RegisteredClaims
 }
 
-// Generate crea un JWT que expira en 7 días
+// Generate crea un access token que expira en 15 minutos
 func (s *JWTService) Generate(userID string) (string, error) {
 	claims := Claims{
 		UserID: userID,
 		RegisteredClaims: jwt.RegisteredClaims{
 			Subject:   userID,
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(7 * 24 * time.Hour)),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(5 * time.Minute)), // ← cambio
 		},
 	}
 
