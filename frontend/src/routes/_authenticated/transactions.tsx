@@ -28,10 +28,14 @@ import {
     useTransactions,
     useUpdateTransaction,
 } from "@/hooks/useTransactions";
+import { APP_NAME_SHORT } from "@/lib/constants";
 import type { TransactionFormData } from "@/lib/schemas";
 import type { Transaction } from "@/types";
 
 export const Route = createFileRoute("/_authenticated/transactions")({
+    head: () => ({
+        meta: [{ title: `${APP_NAME_SHORT} - Transactions` }],
+    }),
     component: TransactionsPage,
 });
 

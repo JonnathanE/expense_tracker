@@ -1,5 +1,6 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { ArrowLeftRight, LayoutDashboard, Tag } from "lucide-react";
+import logo from "@/assets/logo.png";
 import { NavUser } from "@/components/shared/NavUser";
 import {
     Sidebar,
@@ -14,6 +15,7 @@ import {
     SidebarTrigger,
     useSidebar,
 } from "@/components/ui/sidebar";
+import { APP_NAME_SHORT } from "@/lib/constants";
 import { useAuthStore } from "@/store/authStore";
 import type { User } from "@/types";
 
@@ -44,8 +46,14 @@ function AppSidebar({ user }: { user: User | null }) {
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
                             <Link to="/" onClick={handleNavClick}>
-                                <span className="text-xl">💰</span>
-                                <span className="font-bold">Expense</span>
+                                <img
+                                    src={logo}
+                                    alt="Logo"
+                                    className="w-6 h-6 rounded-md"
+                                />
+                                <span className="font-bold">
+                                    {APP_NAME_SHORT}
+                                </span>
                             </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>

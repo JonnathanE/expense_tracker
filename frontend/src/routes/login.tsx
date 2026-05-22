@@ -10,6 +10,7 @@ import axios from "axios";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { authApi } from "@/api/auth";
+import logo from "@/assets/logo.png";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,10 +23,14 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { APP_NAME } from "@/lib/constants";
 import { type LoginFormData, loginSchema } from "@/lib/schemas";
 import { useAuthStore } from "@/store/authStore";
 
 export const Route = createFileRoute("/login")({
+    head: () => ({
+        meta: [{ title: `${APP_NAME} - Login` }],
+    }),
     beforeLoad: () => {
         const { isAuthenticated } = useAuthStore.getState();
         if (isAuthenticated) throw redirect({ to: "/" });
@@ -61,9 +66,13 @@ function LoginPage() {
             <div className="w-full max-w-sm space-y-6">
                 {/* Logo */}
                 <div className="text-center space-y-2">
-                    <div className="text-5xl">💰</div>
+                    <img
+                        src={logo}
+                        alt="Logo"
+                        className="w-16 h-16 mx-auto rounded-2xl"
+                    />
                     <h1 className="text-2xl font-bold text-foreground">
-                        Expense Tracker
+                        {APP_NAME}
                     </h1>
                     <p className="text-muted-foreground text-sm">
                         Ingresa a tu cuenta

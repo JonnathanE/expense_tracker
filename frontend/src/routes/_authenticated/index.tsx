@@ -3,8 +3,12 @@ import { CategoryBreakdown } from "@/components/shared/CategoryBreakdown";
 import { MonthPicker } from "@/components/shared/MonthPicker";
 import { SummaryCards } from "@/components/shared/SummaryCards";
 import { useSummary } from "@/hooks/useSummary";
+import { APP_NAME_SHORT } from "@/lib/constants";
 
 export const Route = createFileRoute("/_authenticated/")({
+    head: () => ({
+        meta: [{ title: `${APP_NAME_SHORT} - Dashboard` }],
+    }),
     component: DashboardPage,
 });
 

@@ -27,10 +27,14 @@ import {
     useDeleteCategory,
     useUpdateCategory,
 } from "@/hooks/useCategories";
+import { APP_NAME_SHORT } from "@/lib/constants";
 import type { CategoryFormData } from "@/lib/schemas";
 import type { Category } from "@/types";
 
 export const Route = createFileRoute("/_authenticated/categories")({
+    head: () => ({
+        meta: [{ title: `${APP_NAME_SHORT} - Categories` }],
+    }),
     component: CategoriesPage,
 });
 

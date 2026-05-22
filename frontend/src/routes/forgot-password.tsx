@@ -4,6 +4,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import axios from "axios";
 import { useForm } from "react-hook-form";
 import { authApi } from "@/api/auth";
+import logo from "@/assets/logo.png";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,6 +17,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { APP_NAME } from "@/lib/constants";
 import {
     type ForgotPasswordFormData,
     forgotPasswordSchema,
@@ -45,9 +47,13 @@ function ForgotPasswordPage() {
         <div className="min-h-screen bg-background flex items-center justify-center p-4">
             <div className="w-full max-w-sm space-y-6">
                 <div className="text-center space-y-2">
-                    <div className="text-5xl">💰</div>
+                    <img
+                        src={logo}
+                        alt="Logo"
+                        className="w-16 h-16 mx-auto rounded-2xl"
+                    />
                     <h1 className="text-2xl font-bold text-foreground">
-                        Expense Tracker
+                        {APP_NAME}
                     </h1>
                     <p className="text-muted-foreground text-sm">
                         Recupera tu contraseña

@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import axios from "axios";
 import { authApi } from "@/api/auth";
+import logo from "@/assets/logo.png";
 import { Button } from "@/components/ui/button";
 
 // Leer el query param ?token= de la URL de forma type-safe
@@ -26,7 +27,11 @@ function ActivatePage() {
     return (
         <div className="min-h-screen bg-background flex items-center justify-center p-4">
             <div className="w-full max-w-sm text-center space-y-6">
-                <div className="text-5xl">💰</div>
+                <img
+                    src={logo}
+                    alt="Logo"
+                    className="w-16 h-16 mx-auto rounded-2xl"
+                />
 
                 {/* Cargando */}
                 {isPending && token && (
