@@ -1,5 +1,6 @@
 import { MoreHorizontal } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
     Dialog,
@@ -61,13 +62,14 @@ export function CategoryColorPicker({
 }: CategoryColorPickerProps) {
     const [open, setOpen] = useState(false);
     const [search, setSearch] = useState("");
+    const { t } = useTranslation();
 
     const selectedColor = ALL_CATEGORY_COLORS.find((c) => c.value === value);
 
     const filteredGroups = search.trim()
         ? [
               {
-                  group: "Resultados",
+                  group: t("categoryColorPicker.results"),
                   colors: ALL_CATEGORY_COLORS.filter(
                       (c) =>
                           c.label
@@ -120,11 +122,13 @@ export function CategoryColorPicker({
             <Dialog open={open} onOpenChange={setOpen}>
                 <DialogContent className="max-w-lg max-h-[80vh] flex flex-col">
                     <DialogHeader>
-                        <DialogTitle>Seleccionar color</DialogTitle>
+                        <DialogTitle>
+                            {t("categoryColorPicker.title")}
+                        </DialogTitle>
                     </DialogHeader>
 
                     <Input
-                        placeholder="Buscar color..."
+                        placeholder={t("categoryColorPicker.search")}
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                         className="shrink-0"
@@ -157,7 +161,7 @@ export function CategoryColorPicker({
 
                         {filteredGroups[0]?.colors.length === 0 && (
                             <p className="text-muted-foreground text-sm text-center py-8">
-                                Sin resultados para "{search}"
+                                {t("categoryColorPicker.noResults", { search })}
                             </p>
                         )}
                     </div>
@@ -167,7 +171,7 @@ export function CategoryColorPicker({
                             variant="outline"
                             onClick={() => setOpen(false)}
                         >
-                            Cerrar
+                            {t("categoryColorPicker.close")}
                         </Button>
                     </div>
                 </DialogContent>

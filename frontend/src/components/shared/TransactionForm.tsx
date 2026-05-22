@@ -2,6 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { CategoryIcon } from "@/components/shared/CategoryIcon";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,7 +28,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { useCategories } from "@/hooks/useCategories";
-import { type TransactionFormData, transactionSchema } from "@/lib/schemas";
+import { createSchemas, type TransactionFormData } from "@/lib/schemas";
 import type { Category, Transaction } from "@/types";
 
 interface TransactionFormProps {
@@ -47,6 +48,7 @@ function CategorySelect({
     onChange: (id: string | null) => void;
 }) {
     const [open, setOpen] = useState(false);
+    const { t } = useTranslation();
     const selected = categories.find((c) => c.id === value) ?? null;
 
     return (
@@ -68,7 +70,7 @@ function CategorySelect({
                         </span>
                     ) : (
                         <span className="text-muted-foreground">
-                            Sin categoría
+                            {t("transactionForm.noCategory")}
                         </span>
                     )}
                     <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
@@ -76,9 +78,11 @@ function CategorySelect({
             </PopoverTrigger>
             <PopoverContent className="w-full p-0" align="start">
                 <Command>
-                    <CommandInput placeholder="Buscar categoría..." />
+                    <CommandInput
+                        placeholder={t("transactionForm.searchCategory")}
+                    />
                     <CommandList>
-                        <CommandEmpty>Sin resultados.</CommandEmpty>
+                        <CommandEmpty>{t("common.noResults")}</CommandEmpty>
                         <CommandGroup>
                             {categories.map((c) => (
                                 <CommandItem
@@ -116,6 +120,8 @@ export function TransactionForm({
     isPending,
     defaultValues,
 }: TransactionFormProps) {
+    const { t } = useTranslation();
+    const { transactionSchema } = createSchemas(t);
     const { data: categories = [] } = useCategories();
 
     const {
@@ -151,7 +157,7 @@ export function TransactionForm({
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             {/* Tipo */}
             <div className="space-y-2">
-                <Label>Tipo</Label>
+                <Label>{t("transactionForm.type")}</Label>
                 <Controller
                     control={control}
                     name="type"
@@ -165,10 +171,10 @@ export function TransactionForm({
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="expense">
-                                    💸 Gasto
+                                    {t("transactionForm.expense")}
                                 </SelectItem>
                                 <SelectItem value="income">
-                                    💵 Ingreso
+                                    {t("transactionForm.income")}
                                 </SelectItem>
                             </SelectContent>
                         </Select>
@@ -178,12 +184,12 @@ export function TransactionForm({
 
             {/* Monto */}
             <div className="space-y-2">
-                <Label>Monto (USD)</Label>
+                <Label>{t("transactionForm.amount")}</Label>
                 <Input
                     type="number"
                     step="0.01"
                     min="0.01"
-                    placeholder="0.00"
+                    placeholder={t("transactionForm.amountPlaceholder")}
                     {...register("amount", { valueAsNumber: true })}
                 />
                 {errors.amount && (
@@ -195,7 +201,7 @@ export function TransactionForm({
 
             {/* Categoría */}
             <div className="space-y-2">
-                <Label>Categoría</Label>
+                <Label>{t("transactionForm.category")}</Label>
                 <Controller
                     control={control}
                     name="category_id"
@@ -211,16 +217,16 @@ export function TransactionForm({
 
             {/* Descripción */}
             <div className="space-y-2">
-                <Label>Descripción</Label>
+                <Label>{t("transactionForm.description")}</Label>
                 <Input
-                    placeholder="Descripción opcional"
+                    placeholder={t("transactionForm.descriptionPlaceholder")}
                     {...register("description")}
                 />
             </div>
 
             {/* Fecha */}
             <div className="space-y-2">
-                <Label>Fecha</Label>
+                <Label>{t("transactionForm.date")}</Label>
                 <Input type="date" {...register("date")} />
                 {errors.date && (
                     <p className="text-destructive text-xs">
@@ -232,14 +238,14 @@ export function TransactionForm({
             {/* Botones */}
             <div className="flex gap-3 justify-end pt-2">
                 <Button type="button" variant="ghost" onClick={onCancel}>
-                    Cancelar
+                    {t("transactionForm.cancel")}
                 </Button>
                 <Button type="submit" disabled={isPending}>
                     {isPending
-                        ? "Guardando..."
+                        ? t("transactionForm.saving")
                         : defaultValues
-                          ? "Guardar cambios"
-                          : "Crear"}
+                          ? t("transactionForm.saveChanges")
+                          : t("transactionForm.create")}
                 </Button>
             </div>
         </form>

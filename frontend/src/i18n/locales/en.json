@@ -1,0 +1,245 @@
+{
+    "common": {
+        "cancel": "Cancel",
+        "save": "Save changes",
+        "delete": "Delete",
+        "loading": "Loading...",
+        "create": "Create",
+        "noResults": "No results.",
+        "close": "Close",
+        "search": "Search",
+        "optional": "Optional"
+    },
+    "theme": {
+        "light": "Light mode",
+        "dark": "Dark mode"
+    },
+    "language": {
+        "es": "Español",
+        "en": "English",
+        "switch": "Language"
+    },
+    "nav": {
+        "dashboard": "Dashboard",
+        "transactions": "Transactions",
+        "categories": "Categories"
+    },
+    "login": {
+        "title": "Sign in",
+        "subtitle": "Sign in to your account",
+        "description": "Enter your email and password",
+        "email": "Email",
+        "emailPlaceholder": "you@email.com",
+        "password": "Password",
+        "passwordPlaceholder": "••••••••",
+        "submit": "Sign in",
+        "submitting": "Signing in...",
+        "forgotPassword": "Forgot your password?",
+        "noAccount": "Don't have an account?",
+        "register": "Register",
+        "error": "Error signing in",
+        "welcome": "Welcome, {{name}}",
+        "backToLogin": "← Back to login"
+    },
+    "register": {
+        "title": "Create account",
+        "subtitle": "Create your account",
+        "description": "Fill in the details to register",
+        "name": "Name",
+        "namePlaceholder": "Your name",
+        "email": "Email",
+        "emailPlaceholder": "you@email.com",
+        "password": "Password",
+        "passwordPlaceholder": "Minimum 6 characters",
+        "confirmPassword": "Confirm password",
+        "confirmPasswordPlaceholder": "Repeat your password",
+        "submit": "Create account",
+        "submitting": "Creating account...",
+        "hasAccount": "Already have an account?",
+        "signIn": "Sign in",
+        "successTitle": "Check your email",
+        "successMessage": "We sent an activation link to {{email}}. Click it to activate your account.",
+        "successSpam": "Can't see it? Check your spam folder.",
+        "successActivated": "Already activated?",
+        "error": "Error registering"
+    },
+    "activate": {
+        "loading": "Activating your account...",
+        "invalidLink": "Invalid link",
+        "invalidMessage": "The activation link is not valid. Check your email.",
+        "success": "Account activated!",
+        "successMessage": "Your account is ready. You can now sign in.",
+        "goToLogin": "Go to login",
+        "error": "Activation error",
+        "errorMessage": "The link is invalid or has expired.",
+        "createAccount": "Create new account"
+    },
+    "forgotPassword": {
+        "subtitle": "Recover your password",
+        "title": "Forgot password",
+        "description": "Enter your email and we'll send you a link to reset it.",
+        "email": "Email",
+        "emailPlaceholder": "you@email.com",
+        "submit": "Send recovery link",
+        "submitting": "Sending...",
+        "successTitle": "Email sent",
+        "error": "Error processing request",
+        "backToLogin": "← Back to login"
+    },
+    "resetPassword": {
+        "subtitle": "Reset your password",
+        "title": "New password",
+        "description": "Enter your new password.",
+        "password": "New password",
+        "passwordPlaceholder": "Minimum 6 characters",
+        "confirmPassword": "Confirm password",
+        "confirmPasswordPlaceholder": "Repeat your password",
+        "submit": "Update password",
+        "submitting": "Updating...",
+        "invalidLink": "Invalid link",
+        "invalidMessage": "The recovery link is not valid.",
+        "requestNewLink": "Request new link",
+        "success": "Password updated. You can now sign in.",
+        "error": "Error resetting password",
+        "backToLogin": "← Back to login"
+    },
+    "auth": {
+        "sessionExpired": "Your session has expired. Please sign in again."
+    },
+    "dashboard": {
+        "title": "Dashboard",
+        "subtitle": "Your financial summary",
+        "errorLoading": "Error loading summary. Please try again.",
+        "byCategory": "By category"
+    },
+    "transactions": {
+        "title": "Transactions",
+        "recordsThisMonth": "{{count}} records this month",
+        "new": "New",
+        "editTitle": "Edit transaction",
+        "newTitle": "New transaction",
+        "deleteTitle": "Delete transaction?",
+        "deleteDescription": "This action cannot be undone. The transaction will be permanently deleted.",
+        "deleteConfirm": "Delete",
+        "deleting": "Deleting...",
+        "empty": "No transactions this month.",
+        "createFirst": "Create the first one",
+        "created": "Transaction created",
+        "updated": "Transaction updated",
+        "deleted": "Transaction deleted"
+    },
+    "categories": {
+        "title": "Categories",
+        "createdCount": "{{count}} categories created",
+        "new": "New category",
+        "editTitle": "Edit category",
+        "newTitle": "New category",
+        "deleteTitle": "Delete category?",
+        "deleteDescription": "This action cannot be undone. The category will be permanently deleted.",
+        "deleteConfirm": "Delete",
+        "deleting": "Deleting...",
+        "expenses": "Expenses",
+        "incomes": "Incomes",
+        "empty": "No categories yet.",
+        "created": "Category created",
+        "updated": "Category updated",
+        "deleted": "Category deleted"
+    },
+    "navUser": {
+        "logout": "Sign out",
+        "loggedOut": "Signed out successfully"
+    },
+    "transactionForm": {
+        "type": "Type",
+        "expense": "💸 Expense",
+        "income": "💵 Income",
+        "amount": "Amount (USD)",
+        "amountPlaceholder": "0.00",
+        "category": "Category",
+        "noCategory": "No category",
+        "searchCategory": "Search category...",
+        "description": "Description",
+        "descriptionPlaceholder": "Optional description",
+        "date": "Date",
+        "cancel": "Cancel",
+        "saving": "Saving...",
+        "saveChanges": "Save changes",
+        "create": "Create"
+    },
+    "categoryForm": {
+        "name": "Name",
+        "namePlaceholder": "E.g. Food",
+        "type": "Type",
+        "selectType": "Select type",
+        "expense": "💸 Expense",
+        "income": "💵 Income",
+        "icon": "Icon",
+        "color": "Color",
+        "cancel": "Cancel",
+        "saving": "Saving...",
+        "saveChanges": "Save changes",
+        "create": "Create category"
+    },
+    "summaryCards": {
+        "balance": "Balance",
+        "incomes": "Income",
+        "expenses": "Expenses"
+    },
+    "categoryBreakdown": {
+        "noTransactions": "No transactions this month.",
+        "expenses": "Expenses",
+        "incomes": "Income",
+        "noRecords": "No records.",
+        "noCategory": "No category",
+        "transaction": "transaction",
+        "transactions": "transactions"
+    },
+    "categoryCard": {
+        "income": "Income",
+        "expense": "Expense"
+    },
+    "categoryIconPicker": {
+        "results": "Results",
+        "title": "Select icon",
+        "search": "Search icon...",
+        "noResults": "No results for \"{{search}}\"",
+        "close": "Close"
+    },
+    "categoryColorPicker": {
+        "results": "Results",
+        "title": "Select color",
+        "search": "Search color...",
+        "noResults": "No results for \"{{search}}\"",
+        "close": "Close"
+    },
+    "monthPicker": {
+        "january": "January",
+        "february": "February",
+        "march": "March",
+        "april": "April",
+        "may": "May",
+        "june": "June",
+        "july": "July",
+        "august": "August",
+        "september": "September",
+        "october": "October",
+        "november": "November",
+        "december": "December"
+    },
+    "schema": {
+        "emailRequired": "Email is required",
+        "emailInvalid": "Enter a valid email",
+        "passwordRequired": "Password is required",
+        "nameRequired": "Name is required",
+        "nameMinLength": "Name must have at least 2 characters",
+        "passwordMinLength": "Password must have at least 6 characters",
+        "confirmPassword": "Confirm your password",
+        "passwordsNoMatch": "Passwords do not match",
+        "typeRequired": "Select a type",
+        "iconRequired": "Select an icon",
+        "colorRequired": "Select a color",
+        "amountInvalid": "Enter a valid amount",
+        "amountPositive": "Amount must be greater than 0",
+        "dateRequired": "Date is required"
+    }
+}

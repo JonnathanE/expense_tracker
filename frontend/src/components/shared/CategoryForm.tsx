@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { CategoryColorPicker } from "@/components/shared/CategoryColorPicker";
 import { CategoryIconPicker } from "@/components/shared/CategoryIconPicker";
 import { Button } from "@/components/ui/button";
@@ -12,7 +13,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { type CategoryFormData, categorySchema } from "@/lib/schemas";
+import { type CategoryFormData, createSchemas } from "@/lib/schemas";
 
 interface CategoryFormProps {
     onSubmit: (data: CategoryFormData) => void;
@@ -27,6 +28,9 @@ export function CategoryForm({
     isPending,
     defaultValues,
 }: CategoryFormProps) {
+    const { t } = useTranslation();
+    const { categorySchema } = createSchemas(t);
+
     const {
         register,
         control,
@@ -45,8 +49,11 @@ export function CategoryForm({
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             {/* Nombre */}
             <div className="space-y-2">
-                <Label>Nombre</Label>
-                <Input placeholder="Ej: Alimentación" {...register("name")} />
+                <Label>{t("categoryForm.name")}</Label>
+                <Input
+                    placeholder={t("categoryForm.namePlaceholder")}
+                    {...register("name")}
+                />
                 {errors.name && (
                     <p className="text-destructive text-xs">
                         {errors.name.message}
@@ -56,7 +63,7 @@ export function CategoryForm({
 
             {/* Tipo */}
             <div className="space-y-2">
-                <Label>Tipo</Label>
+                <Label>{t("categoryForm.type")}</Label>
                 <Controller
                     control={control}
                     name="type"
@@ -66,14 +73,16 @@ export function CategoryForm({
                             defaultValue={field.value}
                         >
                             <SelectTrigger className="w-full">
-                                <SelectValue placeholder="Seleccionar tipo" />
+                                <SelectValue
+                                    placeholder={t("categoryForm.selectType")}
+                                />
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="expense">
-                                    💸 Gasto
+                                    {t("categoryForm.expense")}
                                 </SelectItem>
                                 <SelectItem value="income">
-                                    💵 Ingreso
+                                    {t("categoryForm.income")}
                                 </SelectItem>
                             </SelectContent>
                         </Select>
@@ -88,7 +97,7 @@ export function CategoryForm({
 
             {/* Ícono */}
             <div className="space-y-2">
-                <Label>Ícono</Label>
+                <Label>{t("categoryForm.icon")}</Label>
                 <Controller
                     control={control}
                     name="icon"
@@ -108,7 +117,7 @@ export function CategoryForm({
 
             {/* Color */}
             <div className="space-y-2">
-                <Label>Color</Label>
+                <Label>{t("categoryForm.color")}</Label>
                 <Controller
                     control={control}
                     name="color"
@@ -129,14 +138,14 @@ export function CategoryForm({
             {/* Botones */}
             <div className="flex gap-3 justify-end pt-2">
                 <Button type="button" variant="ghost" onClick={onCancel}>
-                    Cancelar
+                    {t("categoryForm.cancel")}
                 </Button>
                 <Button type="submit" disabled={isPending}>
                     {isPending
-                        ? "Guardando..."
+                        ? t("categoryForm.saving")
                         : defaultValues
-                          ? "Guardar cambios"
-                          : "Crear categoría"}
+                          ? t("categoryForm.saveChanges")
+                          : t("categoryForm.create")}
                 </Button>
             </div>
         </form>

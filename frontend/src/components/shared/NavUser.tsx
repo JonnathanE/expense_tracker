@@ -1,7 +1,9 @@
 import { useNavigate } from "@tanstack/react-router";
 import { ChevronsUpDown, LogOut, Moon, Sun } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { authApi } from "@/api/auth";
+import { LanguageSwitcher } from "@/components/shared/LanguageSwitcher";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
     DropdownMenu,
@@ -41,6 +43,7 @@ export function NavUser({ user }: NavUserProps) {
     const { logout } = useAuthStore();
     const { theme, toggle } = useTheme();
     const navigate = useNavigate();
+    const { t } = useTranslation();
 
     const handleLogout = async () => {
         try {
@@ -49,7 +52,7 @@ export function NavUser({ user }: NavUserProps) {
             // Si falla igual limpiamos el estado local
         } finally {
             logout();
-            toast.success("Sesión cerrada correctamente");
+            toast.success(t("navUser.loggedOut"));
             navigate({ to: "/login" });
         }
     };
@@ -108,15 +111,18 @@ export function NavUser({ user }: NavUserProps) {
                                 {theme === "dark" ? <Sun /> : <Moon />}
                                 <span>
                                     {theme === "dark"
-                                        ? "Modo claro"
-                                        : "Modo oscuro"}
+                                        ? t("theme.light")
+                                        : t("theme.dark")}
                                 </span>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem asChild>
+                                <LanguageSwitcher variant="sidebar" />
                             </DropdownMenuItem>
                         </DropdownMenuGroup>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem onClick={handleLogout}>
                             <LogOut />
-                            <span>Cerrar sesión</span>
+                            <span>{t("navUser.logout")}</span>
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>

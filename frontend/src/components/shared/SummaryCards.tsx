@@ -1,4 +1,5 @@
 import { TrendingDown, TrendingUp, Wallet } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Card, CardContent } from "@/components/ui/card";
 import type { Summary } from "@/types";
 
@@ -7,15 +8,17 @@ interface SummaryCardsProps {
 }
 
 const formatCurrency = (amount: number) =>
-    new Intl.NumberFormat("es-EC", {
+    new Intl.NumberFormat("en-US", {
         style: "currency",
         currency: "USD",
     }).format(amount);
 
 export function SummaryCards({ summary }: SummaryCardsProps) {
+    const { t } = useTranslation();
+
     const cards = [
         {
-            label: "Balance",
+            label: t("summaryCards.balance"),
             value: summary.balance,
             icon: Wallet,
             color:
@@ -24,7 +27,7 @@ export function SummaryCards({ summary }: SummaryCardsProps) {
             border: "border-border",
         },
         {
-            label: "Ingresos",
+            label: t("summaryCards.incomes"),
             value: summary.total_income,
             icon: TrendingUp,
             color: "text-emerald-800",
@@ -32,7 +35,7 @@ export function SummaryCards({ summary }: SummaryCardsProps) {
             border: "border-emerald-200/50",
         },
         {
-            label: "Gastos",
+            label: t("summaryCards.expenses"),
             value: summary.total_expense,
             icon: TrendingDown,
             color: "text-destructive",

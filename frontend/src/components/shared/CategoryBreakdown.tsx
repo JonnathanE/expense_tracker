@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { CategoryIcon } from "@/components/shared/CategoryIcon";
 import type { CategorySummary } from "@/types";
 
@@ -6,16 +7,18 @@ interface CategoryBreakdownProps {
 }
 
 const formatCurrency = (amount: number) =>
-    new Intl.NumberFormat("es-EC", {
+    new Intl.NumberFormat("en-US", {
         style: "currency",
         currency: "USD",
     }).format(amount);
 
 export function CategoryBreakdown({ categories }: CategoryBreakdownProps) {
+    const { t } = useTranslation();
+
     if (categories.length === 0) {
         return (
             <p className="text-muted-foreground text-sm text-center py-8">
-                No hay transacciones este mes.
+                {t("categoryBreakdown.noTransactions")}
             </p>
         );
     }
@@ -30,8 +33,16 @@ export function CategoryBreakdown({ categories }: CategoryBreakdownProps) {
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <CategoryList title="Gastos" items={expenses} type="expense" />
-            <CategoryList title="Ingresos" items={incomes} type="income" />
+            <CategoryList
+                title={t("categoryBreakdown.expenses")}
+                items={expenses}
+                type="expense"
+            />
+            <CategoryList
+                title={t("categoryBreakdown.incomes")}
+                items={incomes}
+                type="income"
+            />
         </div>
     );
 }
@@ -45,6 +56,8 @@ function CategoryList({
     items: CategorySummary[];
     type: "income" | "expense";
 }) {
+    const { t } = useTranslation();
+
     return (
         <div className="space-y-3">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
@@ -53,7 +66,7 @@ function CategoryList({
 
             {items.length === 0 ? (
                 <p className="text-muted-foreground/50 text-sm py-4">
-                    Sin registros.
+                    {t("categoryBreakdown.noRecords")}
                 </p>
             ) : (
                 <div className="space-y-2">
@@ -69,13 +82,16 @@ function CategoryList({
                                 />
                                 <div>
                                     <p className="text-sm font-medium text-foreground">
-                                        {cat.category_name || "Sin categoría"}
+                                        {cat.category_name ||
+                                            t("categoryBreakdown.noCategory")}
                                     </p>
                                     <p className="text-xs text-muted-foreground">
                                         {cat.tx_count}{" "}
                                         {cat.tx_count === 1
-                                            ? "transacción"
-                                            : "transacciones"}
+                                            ? t("categoryBreakdown.transaction")
+                                            : t(
+                                                  "categoryBreakdown.transactions",
+                                              )}
                                     </p>
                                 </div>
                             </div>

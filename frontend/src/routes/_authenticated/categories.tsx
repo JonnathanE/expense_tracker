@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Plus } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { CategoryCard } from "@/components/shared/CategoryCard";
 import { CategoryForm } from "@/components/shared/CategoryForm";
@@ -42,6 +43,7 @@ function CategoriesPage() {
     const [open, setOpen] = useState(false);
     const [editing, setEditing] = useState<Category | null>(null);
     const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+    const { t } = useTranslation();
 
     const { data: categories = [], isLoading } = useCategories();
     const createMutation = useCreateCategory();
@@ -54,7 +56,7 @@ function CategoriesPage() {
                 { id: editing.id, data },
                 {
                     onSuccess: () => {
-                        toast.success("Categoría actualizada");
+                        toast.success(t("categories.updated"));
                         closeModal();
                     },
                 },
@@ -62,7 +64,7 @@ function CategoriesPage() {
         } else {
             createMutation.mutate(data, {
                 onSuccess: () => {
-                    toast.success("Categoría creada");
+                    toast.success(t("categories.created"));
                     closeModal();
                 },
             });
@@ -82,7 +84,7 @@ function CategoriesPage() {
     const handleConfirmDelete = () => {
         if (!pendingDeleteId) return;
         deleteMutation.mutate(pendingDeleteId, {
-            onSuccess: () => toast.success("Categoría eliminada"),
+            onSuccess: () => toast.success(t("categories.deleted")),
             onSettled: () => setPendingDeleteId(null),
         });
     };
@@ -98,15 +100,17 @@ function CategoriesPage() {
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-2xl font-bold text-foreground">
-                        Categorías
+                        {t("categories.title")}
                     </h1>
                     <p className="text-muted-foreground text-sm mt-1">
-                        {categories.length} categorías creadas
+                        {t("categories.createdCount", {
+                            count: categories.length,
+                        })}
                     </p>
                 </div>
                 <Button className="gap-2" onClick={() => setOpen(true)}>
                     <Plus className="h-4 w-4" />
-                    Nueva categoría
+                    {t("categories.new")}
                 </Button>
             </div>
 
@@ -115,7 +119,9 @@ function CategoriesPage() {
                 <DialogContent>
                     <DialogHeader>
                         <DialogTitle>
-                            {editing ? "Editar categoría" : "Nueva categoría"}
+                            {editing
+                                ? t("categories.editTitle")
+                                : t("categories.newTitle")}
                         </DialogTitle>
                     </DialogHeader>
                     <CategoryForm
@@ -144,23 +150,24 @@ function CategoriesPage() {
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>
-                            ¿Eliminar categoría?
+                            {t("categories.deleteTitle")}
                         </AlertDialogTitle>
                         <AlertDialogDescription>
-                            Esta acción no se puede deshacer. La categoría será
-                            eliminada permanentemente.
+                            {t("categories.deleteDescription")}
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                        <AlertDialogCancel>
+                            {t("common.cancel")}
+                        </AlertDialogCancel>
                         <AlertDialogAction
                             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                             onClick={handleConfirmDelete}
                             disabled={deleteMutation.isPending}
                         >
                             {deleteMutation.isPending
-                                ? "Eliminando..."
-                                : "Eliminar"}
+                                ? t("categories.deleting")
+                                : t("categories.deleteConfirm")}
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
@@ -182,16 +189,18 @@ function CategoriesPage() {
             {!isLoading && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <CategoryGroup
-                        title="Gastos"
+                        title={t("categories.expenses")}
                         categories={expenses}
+                        emptyLabel={t("categories.empty")}
                         onEditRequest={openEdit}
                         onDeleteRequest={setPendingDeleteId}
                         isDeleting={deleteMutation.isPending}
                     />
 
                     <CategoryGroup
-                        title="Ingresos"
+                        title={t("categories.incomes")}
                         categories={incomes}
+                        emptyLabel={t("categories.empty")}
                         onEditRequest={openEdit}
                         onDeleteRequest={setPendingDeleteId}
                         isDeleting={deleteMutation.isPending}
@@ -205,12 +214,14 @@ function CategoriesPage() {
 function CategoryGroup({
     title,
     categories,
+    emptyLabel,
     onEditRequest,
     onDeleteRequest,
     isDeleting,
 }: {
     title: string;
     categories: ReturnType<typeof useCategories>["data"];
+    emptyLabel: string;
     onEditRequest: (category: Category) => void;
     onDeleteRequest: (id: string) => void;
     isDeleting: boolean;
@@ -222,7 +233,7 @@ function CategoryGroup({
             </h2>
             {!categories || categories.length === 0 ? (
                 <p className="text-muted-foreground/50 text-sm py-4">
-                    Sin categorías aún.
+                    {emptyLabel}
                 </p>
             ) : (
                 <div className="space-y-2">

@@ -1,4 +1,5 @@
 import { Pencil, Trash2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { CategoryIcon } from "@/components/shared/CategoryIcon";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -17,6 +18,8 @@ export function CategoryCard({
     onDeleteRequest,
     isDeleting,
 }: CategoryCardProps) {
+    const { t } = useTranslation();
+
     return (
         <div className="flex items-center justify-between px-4 py-3 rounded-lg bg-card border border-border group">
             <div className="flex items-center gap-3">
@@ -33,7 +36,9 @@ export function CategoryCard({
                                 : "bg-destructive/15 text-destructive"
                         }`}
                     >
-                        {category.type === "income" ? "Ingreso" : "Gasto"}
+                        {category.type === "income"
+                            ? t("categoryCard.income")
+                            : t("categoryCard.expense")}
                     </Badge>
                 </div>
             </div>

@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 import { CategoryBreakdown } from "@/components/shared/CategoryBreakdown";
 import { MonthPicker } from "@/components/shared/MonthPicker";
 import { SummaryCards } from "@/components/shared/SummaryCards";
@@ -14,6 +15,7 @@ export const Route = createFileRoute("/_authenticated/")({
 
 function DashboardPage() {
     const { data: summary, isLoading, isError } = useSummary();
+    const { t } = useTranslation();
 
     return (
         <div className="p-8 space-y-8 max-w-5xl mx-auto">
@@ -21,10 +23,10 @@ function DashboardPage() {
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <h1 className="text-2xl font-bold text-foreground">
-                        Dashboard
+                        {t("dashboard.title")}
                     </h1>
                     <p className="text-muted-foreground text-sm mt-1">
-                        Resumen de tus finanzas
+                        {t("dashboard.subtitle")}
                     </p>
                 </div>
                 <MonthPicker />
@@ -50,7 +52,7 @@ function DashboardPage() {
             {isError && (
                 <div className="text-center py-16">
                     <p className="text-destructive text-sm">
-                        Error cargando el resumen. Intenta de nuevo.
+                        {t("dashboard.errorLoading")}
                     </p>
                 </div>
             )}
@@ -62,7 +64,7 @@ function DashboardPage() {
 
                     <div className="space-y-4">
                         <h2 className="text-lg font-semibold text-foreground">
-                            Por categoría
+                            {t("dashboard.byCategory")}
                         </h2>
                         <CategoryBreakdown categories={summary.by_category} />
                     </div>

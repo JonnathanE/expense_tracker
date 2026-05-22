@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Plus } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { MonthPicker } from "@/components/shared/MonthPicker";
 import { TransactionForm } from "@/components/shared/TransactionForm";
@@ -43,6 +44,7 @@ function TransactionsPage() {
     const [open, setOpen] = useState(false);
     const [editing, setEditing] = useState<Transaction | null>(null);
     const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+    const { t, i18n } = useTranslation();
 
     const { data: transactions = [], isLoading } = useTransactions();
     const createMutation = useCreateTransaction();
@@ -55,7 +57,7 @@ function TransactionsPage() {
                 { id: editing.id, data },
                 {
                     onSuccess: () => {
-                        toast.success("Transacción actualizada");
+                        toast.success(t("transactions.updated"));
                         closeModal();
                     },
                 },
@@ -63,7 +65,7 @@ function TransactionsPage() {
         } else {
             createMutation.mutate(data, {
                 onSuccess: () => {
-                    toast.success("Transacción creada");
+                    toast.success(t("transactions.created"));
                     closeModal();
                 },
             });
@@ -83,7 +85,7 @@ function TransactionsPage() {
     const handleConfirmDelete = () => {
         if (!pendingDeleteId) return;
         deleteMutation.mutate(pendingDeleteId, {
-            onSuccess: () => toast.success("Transacción eliminada"),
+            onSuccess: () => toast.success(t("transactions.deleted")),
             onSettled: () => setPendingDeleteId(null),
         });
     };
@@ -103,7 +105,8 @@ function TransactionsPage() {
 
     const formatGroupDate = (dateStr: string) => {
         const [year, month, day] = dateStr.split("-").map(Number);
-        return new Date(year, month - 1, day).toLocaleDateString("es-EC", {
+        const locale = i18n.language === "en" ? "en-US" : "es-EC";
+        return new Date(year, month - 1, day).toLocaleDateString(locale, {
             weekday: "long",
             day: "numeric",
             month: "long",
@@ -116,17 +119,19 @@ function TransactionsPage() {
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <h1 className="text-2xl font-bold text-foreground">
-                        Transacciones
+                        {t("transactions.title")}
                     </h1>
                     <p className="text-muted-foreground text-sm mt-1">
-                        {transactions.length} registros este mes
+                        {t("transactions.recordsThisMonth", {
+                            count: transactions.length,
+                        })}
                     </p>
                 </div>
                 <div className="flex items-center gap-3">
                     <MonthPicker />
                     <Button className="gap-2" onClick={() => setOpen(true)}>
                         <Plus className="h-4 w-4" />
-                        Nueva
+                        {t("transactions.new")}
                     </Button>
                 </div>
             </div>
@@ -137,8 +142,8 @@ function TransactionsPage() {
                     <DialogHeader>
                         <DialogTitle>
                             {editing
-                                ? "Editar transacción"
-                                : "Nueva transacción"}
+                                ? t("transactions.editTitle")
+                                : t("transactions.newTitle")}
                         </DialogTitle>
                     </DialogHeader>
                     <TransactionForm
@@ -158,23 +163,24 @@ function TransactionsPage() {
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>
-                            ¿Eliminar transacción?
+                            {t("transactions.deleteTitle")}
                         </AlertDialogTitle>
                         <AlertDialogDescription>
-                            Esta acción no se puede deshacer. La transacción
-                            será eliminada permanentemente.
+                            {t("transactions.deleteDescription")}
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                        <AlertDialogCancel>
+                            {t("common.cancel")}
+                        </AlertDialogCancel>
                         <AlertDialogAction
                             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                             onClick={handleConfirmDelete}
                             disabled={deleteMutation.isPending}
                         >
                             {deleteMutation.isPending
-                                ? "Eliminando..."
-                                : "Eliminar"}
+                                ? t("transactions.deleting")
+                                : t("transactions.deleteConfirm")}
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
@@ -197,10 +203,10 @@ function TransactionsPage() {
                 <div className="text-center py-20 space-y-4">
                     <p className="text-5xl">📭</p>
                     <p className="text-muted-foreground">
-                        No hay transacciones este mes.
+                        {t("transactions.empty")}
                     </p>
                     <Button onClick={() => setOpen(true)}>
-                        Crear la primera
+                        {t("transactions.createFirst")}
                     </Button>
                 </div>
             )}

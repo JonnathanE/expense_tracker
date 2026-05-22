@@ -1,5 +1,6 @@
 import { MoreHorizontal } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
     Dialog,
@@ -62,11 +63,12 @@ export function CategoryIconPicker({
 }: CategoryIconPickerProps) {
     const [open, setOpen] = useState(false);
     const [search, setSearch] = useState("");
+    const { t } = useTranslation();
 
     const filteredGroups = search.trim()
         ? [
               {
-                  group: "Resultados",
+                  group: t("categoryIconPicker.results"),
                   icons: ALL_CATEGORY_ICONS.filter(
                       (i) =>
                           i.label
@@ -113,11 +115,13 @@ export function CategoryIconPicker({
             <Dialog open={open} onOpenChange={setOpen}>
                 <DialogContent className="max-w-lg max-h-[80vh] flex flex-col">
                     <DialogHeader>
-                        <DialogTitle>Seleccionar ícono</DialogTitle>
+                        <DialogTitle>
+                            {t("categoryIconPicker.title")}
+                        </DialogTitle>
                     </DialogHeader>
 
                     <Input
-                        placeholder="Buscar ícono..."
+                        placeholder={t("categoryIconPicker.search")}
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                         className="shrink-0"
@@ -160,7 +164,7 @@ export function CategoryIconPicker({
 
                         {filteredGroups[0]?.icons.length === 0 && (
                             <p className="text-muted-foreground text-sm text-center py-8">
-                                Sin resultados para "{search}"
+                                {t("categoryIconPicker.noResults", { search })}
                             </p>
                         )}
                     </div>
@@ -170,7 +174,7 @@ export function CategoryIconPicker({
                             variant="outline"
                             onClick={() => setOpen(false)}
                         >
-                            Cerrar
+                            {t("categoryIconPicker.close")}
                         </Button>
                     </div>
                 </DialogContent>

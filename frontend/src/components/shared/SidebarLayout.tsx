@@ -1,5 +1,6 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { ArrowLeftRight, LayoutDashboard, Tag } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import logo from "@/assets/logo.png";
 import { NavUser } from "@/components/shared/NavUser";
 import {
@@ -20,10 +21,10 @@ import { useAuthStore } from "@/store/authStore";
 import type { User } from "@/types";
 
 const NAV_ITEMS = [
-    { to: "/", label: "Dashboard", icon: LayoutDashboard },
-    { to: "/transactions", label: "Transacciones", icon: ArrowLeftRight },
-    { to: "/categories", label: "Categorías", icon: Tag },
-];
+    { to: "/", labelKey: "nav.dashboard", icon: LayoutDashboard },
+    { to: "/transactions", labelKey: "nav.transactions", icon: ArrowLeftRight },
+    { to: "/categories", labelKey: "nav.categories", icon: Tag },
+] as const;
 
 interface SidebarLayoutProps {
     children: React.ReactNode;
@@ -33,6 +34,7 @@ function AppSidebar({ user }: { user: User | null }) {
     const routerState = useRouterState();
     const currentPath = routerState.location.pathname;
     const { setOpenMobile, isMobile } = useSidebar();
+    const { t } = useTranslation();
 
     const handleNavClick = () => {
         if (isMobile) setOpenMobile(false);
@@ -63,21 +65,24 @@ function AppSidebar({ user }: { user: User | null }) {
             {/* Nav */}
             <SidebarContent>
                 <SidebarMenu>
-                    {NAV_ITEMS.map(({ to, label, icon: Icon }) => (
-                        <SidebarMenuItem key={to}>
-                            <SidebarMenuButton
-                                asChild
-                                isActive={currentPath === to}
-                                tooltip={label}
-                                className="py-7"
-                            >
-                                <Link to={to} onClick={handleNavClick}>
-                                    <Icon />
-                                    <span>{label}</span>
-                                </Link>
-                            </SidebarMenuButton>
-                        </SidebarMenuItem>
-                    ))}
+                    {NAV_ITEMS.map(({ to, labelKey, icon: Icon }) => {
+                        const label = t(labelKey);
+                        return (
+                            <SidebarMenuItem key={to}>
+                                <SidebarMenuButton
+                                    asChild
+                                    isActive={currentPath === to}
+                                    tooltip={label}
+                                    className="py-7"
+                                >
+                                    <Link to={to} onClick={handleNavClick}>
+                                        <Icon />
+                                        <span>{label}</span>
+                                    </Link>
+                                </SidebarMenuButton>
+                            </SidebarMenuItem>
+                        );
+                    })}
                 </SidebarMenu>
             </SidebarContent>
 
