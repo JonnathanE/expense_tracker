@@ -47,7 +47,23 @@ export const transactionSchema = z.object({
     date: z.string().min(1, "La fecha es requerida"),
 });
 
+export const forgotPasswordSchema = z.object({
+    email: z.string().min(1, "El email es requerido").email("Email inválido"),
+});
+
+export const resetPasswordSchema = z
+    .object({
+        password: z.string().min(6, "Mínimo 6 caracteres"),
+        confirmPassword: z.string().min(1, "Confirma tu contraseña"),
+    })
+    .refine((d) => d.password === d.confirmPassword, {
+        message: "Las contraseñas no coinciden",
+        path: ["confirmPassword"],
+    });
+
 export type LoginFormData = z.infer<typeof loginSchema>;
 export type RegisterFormData = z.infer<typeof registerSchema>;
 export type CategoryFormData = z.infer<typeof categorySchema>;
 export type TransactionFormData = z.infer<typeof transactionSchema>;
+export type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
+export type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;

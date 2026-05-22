@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"strings"
 
@@ -74,7 +75,11 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Enviar email (en background para no bloquear la respuesta)
-	go h.emailService.SendActivationEmail(user.Name, user.Email, token)
+	// go h.emailService.SendActivationEmail(user.Name, user.Email, token)
+	if err := h.emailService.SendActivationEmail(user.Name, user.Email, token); err != nil {
+		// Log del error pero no lo expongas al usuario
+		log.Printf("⚠️  Error enviando email de activación a %s: %v", user.Email, err)
+	}
 
 	respondJSON(w, http.StatusCreated, map[string]string{
 		"message": "Usuario creado. Revisa tu email para activar tu cuenta.",
@@ -202,5 +207,72 @@ func (h *AuthHandler) Logout(w http.ResponseWriter, r *http.Request) {
 
 	respondJSON(w, http.StatusOK, map[string]string{
 		"message": "Sesión cerrada correctamente",
+	})
+}
+
+// ── POST /auth/forgot-password ────────────────────────────────────────────────
+
+type forgotPasswordRequest struct {
+	Email string `json:"email"`
+}
+
+func (h *AuthHandler) ForgotPassword(w http.ResponseWriter, r *http.Request) {
+	var req forgotPasswordRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		respondError(w, http.StatusBadRequest, "datos inválidos")
+		return
+	}
+
+	user, token, err := h.userService.ForgotPassword(r.Context(), strings.ToLower(req.Email))
+	if err != nil {
+		respondError(w, http.StatusInternalServerError, "error procesando solicitud")
+		return
+	}
+
+	// Si el email existe, enviamos el correo
+	if user != nil && token != "" {
+		if err := h.emailService.SendPasswordResetEmail(user.Name, user.Email, token); err != nil {
+			log.Printf("⚠️  Error enviando email de reset a %s: %v", user.Email, err)
+		}
+	}
+
+	// Siempre respondemos lo mismo por seguridad
+	// (no revelamos si el email existe)
+	respondJSON(w, http.StatusOK, map[string]string{
+		"message": "Si el email existe recibirás un link para restablecer tu contraseña.",
+	})
+}
+
+// ── POST /auth/reset-password ─────────────────────────────────────────────────
+
+type resetPasswordRequest struct {
+	Token       string `json:"token"`
+	NewPassword string `json:"new_password"`
+}
+
+func (h *AuthHandler) ResetPassword(w http.ResponseWriter, r *http.Request) {
+	var req resetPasswordRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		respondError(w, http.StatusBadRequest, "datos inválidos")
+		return
+	}
+
+	if req.Token == "" {
+		respondError(w, http.StatusBadRequest, "token requerido")
+		return
+	}
+
+	if err := h.userService.ResetPassword(r.Context(), req.Token, req.NewPassword); err != nil {
+		switch err.Error() {
+		case "el token ha expirado":
+			respondError(w, http.StatusGone, err.Error())
+		default:
+			respondError(w, http.StatusBadRequest, err.Error())
+		}
+		return
+	}
+
+	respondJSON(w, http.StatusOK, map[string]string{
+		"message": "Contraseña actualizada correctamente. Ya puedes iniciar sesión.",
 	})
 }

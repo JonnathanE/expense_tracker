@@ -114,7 +114,15 @@ function LoginPage() {
 
                             {/* Password */}
                             <div className="space-y-2">
-                                <Label htmlFor="password">Contraseña</Label>
+                                <div className="flex items-center justify-between">
+                                    <Label htmlFor="password">Contraseña</Label>
+                                    <Link
+                                        to="/forgot-password"
+                                        className="text-xs text-muted-foreground hover:text-foreground"
+                                    >
+                                        ¿Olvidaste tu contraseña?
+                                    </Link>
+                                </div>
                                 <Input
                                     id="password"
                                     type="password"

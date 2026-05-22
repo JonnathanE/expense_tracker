@@ -1,22 +1,72 @@
 package service
 
-import "log"
+import (
+	"fmt"
+
+	"github.com/resend/resend-go/v3"
+)
+
+// Interfaz — permite cambiar el proveedor fácilmente en el futuro
+type EmailSender interface {
+	Send(to, subject, html string) error
+}
+
+// ── Implementación con Resend ─────────────────────────────────────────────────
+
+type ResendSender struct {
+	client *resend.Client
+	from   string
+}
+
+func NewResendSender(apiKey, from string) *ResendSender {
+	return &ResendSender{
+		client: resend.NewClient(apiKey),
+		from:   from,
+	}
+}
+
+func (s *ResendSender) Send(to, subject, html string) error {
+	params := &resend.SendEmailRequest{
+		From:    s.from,
+		To:      []string{to},
+		Subject: subject,
+		Html:    html,
+	}
+
+	_, err := s.client.Emails.Send(params)
+	if err != nil {
+		return fmt.Errorf("error enviando email: %w", err)
+	}
+
+	return nil
+}
+
+// ── EmailService — lógica de negocio de emails ────────────────────────────────
 
 type EmailService struct {
+	sender      EmailSender
 	frontendURL string
 }
 
-func NewEmailService(frontendURL string) *EmailService {
-	return &EmailService{frontendURL: frontendURL}
+func NewEmailService(sender EmailSender, frontendURL string) *EmailService {
+	return &EmailService{
+		sender:      sender,
+		frontendURL: frontendURL,
+	}
 }
 
-func (s *EmailService) SendActivationEmail(name, email, token string) {
-	activationLink := s.frontendURL + "/activate?token=" + token
+func (s *EmailService) SendActivationEmail(name, email, token string) error {
+	activationLink := fmt.Sprintf("%s/activate?token=%s", s.frontendURL, token)
 
-	// Por ahora solo logueamos. Luego conectamos un proveedor real.
-	log.Printf("───────────────────────────────────────────")
-	log.Printf("📧 EMAIL DE ACTIVACIÓN")
-	log.Printf("   Para:  %s <%s>", name, email)
-	log.Printf("   Link:  %s", activationLink)
-	log.Printf("───────────────────────────────────────────")
+	html := buildActivationEmail(name, activationLink)
+
+	return s.sender.Send(email, "Activa tu cuenta — Squirl Expense Tracker", html)
+}
+
+func (s *EmailService) SendPasswordResetEmail(name, email, token string) error {
+	resetLink := fmt.Sprintf("%s/reset-password?token=%s", s.frontendURL, token)
+
+	html := buildPasswordResetEmail(name, resetLink)
+
+	return s.sender.Send(email, "Recuperar contraseña — Squirl Expense Tracker", html)
 }

@@ -25,9 +25,12 @@ func main() {
 	defer pool.Close()
 	log.Println("✅ Conectado a PostgreSQL")
 
+	// Sender de Resend
+	resendSender := service.NewResendSender(cfg.ResendAPIKey, cfg.EmailFrom)
+
 	// Servicios
 	userService := service.NewUserService(pool)
-	emailService := service.NewEmailService(cfg.FrontendURL)
+	emailService := service.NewEmailService(resendSender, cfg.FrontendURL)
 	jwtService := service.NewJWTService(cfg.JWTSecret)
 	refreshService := service.NewRefreshTokenService(pool)
 	categoryService := service.NewCategoryService(pool)
@@ -64,6 +67,8 @@ func main() {
 	r.Get("/auth/activate", authHandler.Activate)
 	r.Post("/auth/login", authHandler.Login)
 	r.Post("/auth/refresh", authHandler.Refresh)
+	r.Post("/auth/forgot-password", authHandler.ForgotPassword)
+	r.Post("/auth/reset-password", authHandler.ResetPassword)
 
 	// Rutas protegidas
 	r.Group(func(r chi.Router) {

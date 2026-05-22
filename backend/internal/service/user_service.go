@@ -165,3 +165,73 @@ func (s *UserService) Login(
 		RefreshToken: refreshToken,
 	}, nil
 }
+
+// ForgotPassword genera un token de reset y lo guarda en la DB
+func (s *UserService) ForgotPassword(ctx context.Context, email string) (*model.User, string, error) {
+	var user model.User
+	err := s.db.QueryRow(ctx,
+		`SELECT id, name, email FROM users WHERE email = $1 AND is_active = TRUE`,
+		email,
+	).Scan(&user.ID, &user.Name, &user.Email)
+
+	if err != nil {
+		// No revelamos si el email existe o no por seguridad
+		return nil, "", nil
+	}
+
+	// Generar token
+	tokenBytes := make([]byte, 32)
+	rand.Read(tokenBytes)
+	resetToken := hex.EncodeToString(tokenBytes)
+	tokenExpires := time.Now().Add(1 * time.Hour)
+
+	_, err = s.db.Exec(ctx,
+		`UPDATE users
+     SET activation_token = $1, activation_token_expires = $2, updated_at = NOW()
+     WHERE id = $3`,
+		resetToken, tokenExpires, user.ID,
+	)
+	if err != nil {
+		return nil, "", fmt.Errorf("error generando token: %w", err)
+	}
+
+	return &user, resetToken, nil
+}
+
+// ResetPassword verifica el token y actualiza la contraseña
+func (s *UserService) ResetPassword(ctx context.Context, token, newPassword string) error {
+	var userID string
+	var expires time.Time
+
+	err := s.db.QueryRow(ctx,
+		`SELECT id, activation_token_expires FROM users WHERE activation_token = $1`,
+		token,
+	).Scan(&userID, &expires)
+
+	if err != nil {
+		return fmt.Errorf("token inválido")
+	}
+
+	if time.Now().After(expires) {
+		return fmt.Errorf("el token ha expirado")
+	}
+
+	if len(newPassword) < 6 {
+		return fmt.Errorf("la contraseña debe tener al menos 6 caracteres")
+	}
+
+	hash, err := bcrypt.GenerateFromPassword([]byte(newPassword), bcrypt.DefaultCost)
+	if err != nil {
+		return fmt.Errorf("error procesando contraseña: %w", err)
+	}
+
+	_, err = s.db.Exec(ctx,
+		`UPDATE users
+     SET password = $1, activation_token = NULL,
+         activation_token_expires = NULL, updated_at = NOW()
+     WHERE id = $2`,
+		string(hash), userID,
+	)
+
+	return err
+}
