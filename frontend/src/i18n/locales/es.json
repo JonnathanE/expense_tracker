@@ -23,7 +23,9 @@
         "dashboard": "Dashboard",
         "transactions": "Transacciones",
         "accounts": "Cuentas",
-        "categories": "Categorías"
+        "categories": "Categorías",
+        "newTransaction": "Nueva transacción",
+        "newTransfer": "Transferencia"
     },
     "login": {
         "title": "Iniciar sesión",

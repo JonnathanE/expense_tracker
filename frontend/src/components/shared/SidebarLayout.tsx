@@ -3,6 +3,7 @@ import { ArrowLeftRight, LayoutDashboard, Tag, Wallet } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import logo from "@/assets/logo.png";
 import { NavUser } from "@/components/shared/NavUser";
+import { QuickActions } from "@/components/shared/QuickActions";
 import {
     Sidebar,
     SidebarContent,
@@ -107,6 +108,9 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
                 <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
                     <div className="flex items-center gap-2 px-4">
                         <SidebarTrigger className="-ml-1" />
+                    </div>
+                    <div className="ml-auto flex items-center gap-2 px-4">
+                        <QuickActions />
                     </div>
                 </header>
                 <main className="flex-1 overflow-auto">{children}</main>

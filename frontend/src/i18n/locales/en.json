@@ -23,7 +23,9 @@
         "dashboard": "Dashboard",
         "transactions": "Transactions",
         "accounts": "Accounts",
-        "categories": "Categories"
+        "categories": "Categories",
+        "newTransaction": "New transaction",
+        "newTransfer": "Transfer"
     },
     "login": {
         "title": "Sign in",

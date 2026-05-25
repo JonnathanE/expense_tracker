@@ -103,7 +103,7 @@ func (h *TransactionHandler) Update(w http.ResponseWriter, r *http.Request) {
 	}
 
 	transaction, err := h.transactionService.Update(
-		r.Context(), id, userID, req.CategoryID,
+		r.Context(), id, userID, req.AccountID, req.CategoryID,
 		req.Amount, req.Type, req.Description, req.Date,
 		h.accountService,
 	)

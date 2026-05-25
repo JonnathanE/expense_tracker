@@ -156,6 +156,7 @@ func (s *TransactionService) Create(
 func (s *TransactionService) Update(
 	ctx context.Context,
 	id, userID string,
+	accountID *string,
 	categoryID *string,
 	amount float64,
 	txType, description, date string,
@@ -169,45 +170,51 @@ func (s *TransactionService) Update(
 	// 1. Obtener datos actuales antes de modificar
 	var oldAmount float64
 	var oldType string
-	var accountID *string
+	var oldAccountID *string
 
 	err = s.db.QueryRow(ctx,
 		`SELECT amount, type, account_id
 			 FROM transactions WHERE id = $1 AND user_id = $2`,
 		id, userID,
-	).Scan(&oldAmount, &oldType, &accountID)
+	).Scan(&oldAmount, &oldType, &oldAccountID)
 	if err != nil {
 		return nil, fmt.Errorf("transaction_not_found")
 	}
 
-	// 2. Actualizar la transacción
+	// 2. Revertir el saldo de la cuenta anterior
+	if oldAccountID != nil {
+		accountService.UpdateBalance(ctx, *oldAccountID, oldAmount, oldType, "subtract")
+	}
+
+	// 3. Actualizar la transacción (incluyendo account_id)
 	var t model.Transaction
 	err = s.db.QueryRow(ctx,
 		`UPDATE transactions
-			 SET category_id = $1, amount = $2, type = $3,
-			     description = $4, date = $5, updated_at = NOW()
-			 WHERE id = $6 AND user_id = $7
+			 SET account_id = $1, category_id = $2, amount = $3, type = $4,
+			     description = $5, date = $6, updated_at = NOW()
+			 WHERE id = $7 AND user_id = $8
 			 RETURNING id, user_id, account_id, category_id,
 			           amount, type, description, date, created_at, updated_at`,
-		categoryID, amount, txType, description, parsedDate, id, userID,
+		accountID, categoryID, amount, txType, description, parsedDate, id, userID,
 	).Scan(
 		&t.ID, &t.UserID, &t.AccountID, &t.CategoryID,
 		&t.Amount, &t.Type, &t.Description, &t.Date,
 		&t.CreatedAt, &t.UpdatedAt,
 	)
 	if err != nil {
+		// Revertir el subtract si el UPDATE falla
+		if oldAccountID != nil {
+			accountService.UpdateBalance(ctx, *oldAccountID, oldAmount, oldType, "add")
+		}
 		return nil, fmt.Errorf("error actualizando transacción")
 	}
 
-	// 3. Ajustar saldo de la cuenta si tiene una asociada
+	// 4. Aplicar el saldo en la cuenta nueva
 	if accountID != nil {
-		// Revertir el efecto del monto anterior
-		accountService.UpdateBalance(ctx, *accountID, oldAmount, oldType, "subtract")
-		// Aplicar el efecto del monto nuevo
 		accountService.UpdateBalance(ctx, *accountID, amount, txType, "add")
 	}
 
-	// 4. Si esta transaction es el fee de alguna transfer → actualizar transfers.fee
+	// 5. Si esta transaction es el fee de alguna transfer → actualizar transfers.fee
 	if oldAmount != amount {
 		s.db.Exec(ctx,
 			`UPDATE transfers
