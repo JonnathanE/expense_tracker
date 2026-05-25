@@ -6,7 +6,7 @@ interface CategoryIconProps {
 
 /**
  * Renders a category icon.
- * - If `icon` looks like a file name (no emoji, only ASCII), loads from /src/assets/icons/
+ * - If `icon` looks like a file name (no emoji, only ASCII), loads from /icons/
  * - Otherwise renders it as text (legacy emoji support)
  * - If `icon` is null, renders a fallback
  */
@@ -26,7 +26,7 @@ export function CategoryIcon({ icon, color, size = "md" }: CategoryIconProps) {
         >
             {isAsset ? (
                 <img
-                    src={`/src/assets/icons/${icon}.svg`}
+                    src={`/icons/${icon}.svg`}
                     alt={icon}
                     className={`${imgDim} invert`}
                 />

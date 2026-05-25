@@ -22,7 +22,7 @@ interface CategoryIconPickerProps {
 function IconImg({ name, className }: { name: string; className?: string }) {
     return (
         <img
-            src={`/src/assets/icons/${name}.svg`}
+            src={`/icons/${name}.svg`}
             alt={name}
             className={className ?? "w-5 h-5"}
             style={{ filter: "var(--icon-filter, none)" }}
