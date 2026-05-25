@@ -1,8 +1,19 @@
+// @title          Expense Tracker API
+// @version        1.0
+// @description    API REST para gestión de gastos personales
+// @host           localhost:8080
+// @BasePath       /
+// @securityDefinitions.apikey BearerAuth
+// @in             header
+// @name           Authorization
 package main
 
 import (
 	"log"
 	"net/http"
+
+	_ "github.com/JonnathanE/expense_tracker/backend/docs" // generado por swag
+	httpSwagger "github.com/swaggo/http-swagger"
 
 	"github.com/go-chi/chi/v5"
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
@@ -73,6 +84,13 @@ func main() {
 	r.Post("/auth/refresh", authHandler.Refresh)
 	r.Post("/auth/forgot-password", authHandler.ForgotPassword)
 	r.Post("/auth/reset-password", authHandler.ResetPassword)
+
+	if cfg.SwaggerEnabled {
+		r.Get("/swagger/*", httpSwagger.Handler(
+			httpSwagger.URL("http://localhost:"+cfg.Port+"/swagger/doc.json"),
+		))
+		log.Println("📄 Swagger UI disponible en http://localhost:" + cfg.Port + "/swagger/index.html")
+	}
 
 	// Rutas protegidas
 	r.Group(func(r chi.Router) {

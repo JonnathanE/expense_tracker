@@ -16,8 +16,17 @@ func NewSummaryHandler(summaryService *service.SummaryService) *SummaryHandler {
 	return &SummaryHandler{summaryService: summaryService}
 }
 
-// GET /summary?date_from=2025-05-01&date_to=2025-05-31
-// Fallback: si no se proveen, usa el mes actual
+// Get godoc
+// @Summary      Obtener resumen financiero
+// @Description  Devuelve ingresos, gastos, balance y desglose por categoría en un rango de fechas. Si no se especifican fechas, usa el mes actual.
+// @Tags         Summary
+// @Produce      json
+// @Security     BearerAuth
+// @Param        date_from  query     string  false  "Fecha inicio (YYYY-MM-DD)"
+// @Param        date_to    query     string  false  "Fecha fin (YYYY-MM-DD)"
+// @Success      200  {object}  summaryResponse
+// @Failure      500  {object}  errorResponse
+// @Router       /summary [get]
 func (h *SummaryHandler) Get(w http.ResponseWriter, r *http.Request) {
 	userID := middleware.GetUserID(r)
 

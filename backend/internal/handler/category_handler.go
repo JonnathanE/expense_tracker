@@ -21,6 +21,15 @@ func NewCategoryHandler(categoryService *service.CategoryService) *CategoryHandl
 
 // ── GET /categories ───────────────────────────────────────────────────────────
 
+// List godoc
+// @Summary      Listar categorías
+// @Description  Devuelve todas las categorías del usuario autenticado
+// @Tags         Categories
+// @Produce      json
+// @Security     BearerAuth
+// @Success      200  {array}   categoryResponse
+// @Failure      500  {object}  errorResponse
+// @Router       /categories [get]
 func (h *CategoryHandler) List(w http.ResponseWriter, r *http.Request) {
 	userID := middleware.GetUserID(r)
 
@@ -35,13 +44,18 @@ func (h *CategoryHandler) List(w http.ResponseWriter, r *http.Request) {
 
 // ── POST /categories ──────────────────────────────────────────────────────────
 
-type categoryRequest struct {
-	Name  string `json:"name"`
-	Type  string `json:"type"`
-	Icon  string `json:"icon"`
-	Color string `json:"color"`
-}
-
+// Create godoc
+// @Summary      Crear categoría
+// @Description  Crea una nueva categoría de tipo income o expense
+// @Tags         Categories
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        body  body      categoryRequest  true  "Datos de la categoría"
+// @Success      201   {object}  categoryResponse
+// @Failure      400   {object}  errorResponse
+// @Failure      500   {object}  errorResponse
+// @Router       /categories [post]
 func (h *CategoryHandler) Create(w http.ResponseWriter, r *http.Request) {
 	userID := middleware.GetUserID(r)
 
@@ -79,6 +93,19 @@ func (h *CategoryHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 // ── PUT /categories/{id} ──────────────────────────────────────────────────────
 
+// Update godoc
+// @Summary      Actualizar categoría
+// @Description  Actualiza nombre, ícono y color de una categoría
+// @Tags         Categories
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id    path      string           true  "ID de la categoría"
+// @Param        body  body      categoryRequest  true  "Datos a actualizar"
+// @Success      200   {object}  categoryResponse
+// @Failure      400   {object}  errorResponse
+// @Failure      404   {object}  errorResponse
+// @Router       /categories/{id} [put]
 func (h *CategoryHandler) Update(w http.ResponseWriter, r *http.Request) {
 	userID := middleware.GetUserID(r)
 	id := chi.URLParam(r, "id")
@@ -106,6 +133,16 @@ func (h *CategoryHandler) Update(w http.ResponseWriter, r *http.Request) {
 
 // ── DELETE /categories/{id} ───────────────────────────────────────────────────
 
+// Delete godoc
+// @Summary      Eliminar categoría
+// @Description  Elimina una categoría del usuario autenticado
+// @Tags         Categories
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id   path  string  true  "ID de la categoría"
+// @Success      204
+// @Failure      404  {object}  errorResponse
+// @Router       /categories/{id} [delete]
 func (h *CategoryHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	userID := middleware.GetUserID(r)
 	id := chi.URLParam(r, "id")

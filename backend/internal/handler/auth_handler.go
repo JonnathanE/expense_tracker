@@ -36,12 +36,17 @@ func NewAuthHandler(
 
 // ── POST /auth/register ───────────────────────────────────────────────────────
 
-type registerRequest struct {
-	Name     string `json:"name"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
-
+// Register godoc
+// @Summary      Registrar usuario
+// @Description  Crea un nuevo usuario y envía email de activación
+// @Tags         Auth
+// @Accept       json
+// @Produce      json
+// @Param        body  body      registerRequest   true  "Datos de registro"
+// @Success      201   {object}  registerResponse
+// @Failure      400   {object}  errorResponse
+// @Failure      409   {object}  errorResponse
+// @Router       /auth/register [post]
 func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 	var req registerRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -88,6 +93,17 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 
 // ── GET /auth/activate?token=xxx ─────────────────────────────────────────────
 
+// Activate godoc
+// @Summary      Activar cuenta
+// @Description  Activa la cuenta del usuario mediante el token enviado por email
+// @Tags         Auth
+// @Produce      json
+// @Param        token  query     string  true  "Token de activación"
+// @Success      200    {object}  messageResponse
+// @Failure      400    {object}  errorResponse
+// @Failure      409    {object}  errorResponse
+// @Failure      410    {object}  errorResponse
+// @Router       /auth/activate [get]
 func (h *AuthHandler) Activate(w http.ResponseWriter, r *http.Request) {
 	token := r.URL.Query().Get("token")
 	if token == "" {
@@ -112,11 +128,18 @@ func (h *AuthHandler) Activate(w http.ResponseWriter, r *http.Request) {
 
 // ── POST /auth/login ──────────────────────────────────────────────────────────
 
-type loginRequest struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
-
+// Login godoc
+// @Summary      Iniciar sesión
+// @Description  Autentica al usuario y devuelve tokens de acceso y refresco
+// @Tags         Auth
+// @Accept       json
+// @Produce      json
+// @Param        body  body      loginRequest  true  "Credenciales"
+// @Success      200   {object}  loginResponse
+// @Failure      400   {object}  errorResponse
+// @Failure      401   {object}  errorResponse
+// @Failure      403   {object}  errorResponse
+// @Router       /auth/login [post]
 func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	var req loginRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -157,10 +180,18 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 
 // ── POST /auth/refresh ────────────────────────────────────────────────────────
 
-type refreshRequest struct {
-	RefreshToken string `json:"refresh_token"`
-}
-
+// Refresh godoc
+// @Summary      Refrescar tokens
+// @Description  Rota el refresh token y devuelve un nuevo par de tokens
+// @Tags         Auth
+// @Accept       json
+// @Produce      json
+// @Param        body  body      refreshRequest  true  "Refresh token"
+// @Success      200   {object}  tokenResponse
+// @Failure      400   {object}  errorResponse
+// @Failure      401   {object}  errorResponse
+// @Failure      500   {object}  errorResponse
+// @Router       /auth/refresh [post]
 func (h *AuthHandler) Refresh(w http.ResponseWriter, r *http.Request) {
 	var req refreshRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -193,6 +224,15 @@ func (h *AuthHandler) Refresh(w http.ResponseWriter, r *http.Request) {
 
 // ── POST /auth/logout ─────────────────────────────────────────────────────────
 
+// Logout godoc
+// @Summary      Cerrar sesión
+// @Description  Revoca todos los refresh tokens del usuario autenticado
+// @Tags         Auth
+// @Produce      json
+// @Security     BearerAuth
+// @Success      200  {object}  messageResponse
+// @Failure      500  {object}  errorResponse
+// @Router       /auth/logout [post]
 func (h *AuthHandler) Logout(w http.ResponseWriter, r *http.Request) {
 	userID := middleware.GetUserID(r)
 
@@ -206,10 +246,16 @@ func (h *AuthHandler) Logout(w http.ResponseWriter, r *http.Request) {
 
 // ── POST /auth/forgot-password ────────────────────────────────────────────────
 
-type forgotPasswordRequest struct {
-	Email string `json:"email"`
-}
-
+// ForgotPassword godoc
+// @Summary      Solicitar reset de contraseña
+// @Description  Envía un email con enlace para restablecer la contraseña (responde igual exista o no el email)
+// @Tags         Auth
+// @Accept       json
+// @Produce      json
+// @Param        body  body      forgotPasswordRequest  true  "Email del usuario"
+// @Success      200   {object}  messageResponse
+// @Failure      400   {object}  errorResponse
+// @Router       /auth/forgot-password [post]
 func (h *AuthHandler) ForgotPassword(w http.ResponseWriter, r *http.Request) {
 	var req forgotPasswordRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -235,11 +281,17 @@ func (h *AuthHandler) ForgotPassword(w http.ResponseWriter, r *http.Request) {
 
 // ── POST /auth/reset-password ─────────────────────────────────────────────────
 
-type resetPasswordRequest struct {
-	Token       string `json:"token"`
-	NewPassword string `json:"new_password"`
-}
-
+// ResetPassword godoc
+// @Summary      Restablecer contraseña
+// @Description  Establece una nueva contraseña usando el token de reset
+// @Tags         Auth
+// @Accept       json
+// @Produce      json
+// @Param        body  body      resetPasswordRequest  true  "Token y nueva contraseña"
+// @Success      200   {object}  messageResponse
+// @Failure      400   {object}  errorResponse
+// @Failure      410   {object}  errorResponse
+// @Router       /auth/reset-password [post]
 func (h *AuthHandler) ResetPassword(w http.ResponseWriter, r *http.Request) {
 	var req resetPasswordRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {

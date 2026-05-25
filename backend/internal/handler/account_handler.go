@@ -17,7 +17,15 @@ func NewAccountHandler(accountService *service.AccountService) *AccountHandler {
 	return &AccountHandler{accountService: accountService}
 }
 
-// GET /accounts
+// List godoc
+// @Summary      Listar cuentas
+// @Description  Devuelve todas las cuentas del usuario autenticado
+// @Tags         Accounts
+// @Produce      json
+// @Security     BearerAuth
+// @Success      200  {array}   accountResponse
+// @Failure      500  {object}  errorResponse
+// @Router       /accounts [get]
 func (h *AccountHandler) List(w http.ResponseWriter, r *http.Request) {
 	userID := middleware.GetUserID(r)
 	accounts, err := h.accountService.List(r.Context(), userID)
@@ -28,16 +36,18 @@ func (h *AccountHandler) List(w http.ResponseWriter, r *http.Request) {
 	respondJSON(w, http.StatusOK, accounts)
 }
 
-// POST /accounts
-type accountRequest struct {
-	Name             string  `json:"name"`
-	Icon             string  `json:"icon"`
-	Color            string  `json:"color"`
-	Balance          float64 `json:"balance"`
-	Currency         string  `json:"currency"`
-	ExcludeFromStats bool    `json:"exclude_from_stats"`
-}
-
+// Create godoc
+// @Summary      Crear cuenta
+// @Description  Crea una nueva cuenta bancaria para el usuario autenticado
+// @Tags         Accounts
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        body  body      accountRequest  true  "Datos de la cuenta"
+// @Success      201   {object}  accountResponse
+// @Failure      400   {object}  errorResponse
+// @Failure      500   {object}  errorResponse
+// @Router       /accounts [post]
 func (h *AccountHandler) Create(w http.ResponseWriter, r *http.Request) {
 	userID := middleware.GetUserID(r)
 
@@ -73,7 +83,19 @@ func (h *AccountHandler) Create(w http.ResponseWriter, r *http.Request) {
 	respondJSON(w, http.StatusCreated, account)
 }
 
-// PUT /accounts/{id}
+// Update godoc
+// @Summary      Actualizar cuenta
+// @Description  Actualiza nombre, ícono, color, saldo y configuración de una cuenta. La moneda no puede cambiarse.
+// @Tags         Accounts
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id    path      string          true  "ID de la cuenta"
+// @Param        body  body      accountRequest  true  "Datos a actualizar"
+// @Success      200   {object}  accountResponse
+// @Failure      400   {object}  errorResponse
+// @Failure      404   {object}  errorResponse
+// @Router       /accounts/{id} [put]
 func (h *AccountHandler) Update(w http.ResponseWriter, r *http.Request) {
 	userID := middleware.GetUserID(r)
 	id := chi.URLParam(r, "id")
@@ -96,7 +118,17 @@ func (h *AccountHandler) Update(w http.ResponseWriter, r *http.Request) {
 	respondJSON(w, http.StatusOK, account)
 }
 
-// DELETE /accounts/{id}
+// Delete godoc
+// @Summary      Eliminar cuenta
+// @Description  Elimina una cuenta. No se puede eliminar la última cuenta del usuario.
+// @Tags         Accounts
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id   path  string  true  "ID de la cuenta"
+// @Success      204
+// @Failure      400  {object}  errorResponse
+// @Failure      404  {object}  errorResponse
+// @Router       /accounts/{id} [delete]
 func (h *AccountHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	userID := middleware.GetUserID(r)
 	id := chi.URLParam(r, "id")

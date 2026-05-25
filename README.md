@@ -12,6 +12,7 @@ Aplicación full-stack para el seguimiento y gestión de gastos personales. El b
 - [Levantar la base de datos](#levantar-la-base-de-datos)
 - [Levantar el backend](#levantar-el-backend)
 - [Levantar el frontend](#levantar-el-frontend)
+- [Documentación de la API (Swagger)](#documentación-de-la-api-swagger)
 - [Endpoints disponibles](#endpoints-disponibles)
 
 ---
@@ -69,7 +70,8 @@ cp backend/.env.example backend/.env
 | `PORT`         | Puerto en el que escucha el servidor         | `8080`                                                              |
 | `DATABASE_URL` | Cadena de conexión a PostgreSQL              | `postgresql://expense_user:expense_pass@localhost:5432/expense_tracker` |
 | `JWT_SECRET`   | Clave secreta para firmar tokens JWT         | *(debes cambiarlo)*                                                 |
-| `FRONTEND_URL` | URL del frontend (CORS y links de email)     | `http://localhost:5173`                                             |
+| `FRONTEND_URL`    | URL del frontend (CORS y links de email)     | `http://localhost:5173`                                             |
+| `SWAGGER_ENABLED` | Habilita la UI de Swagger (`true`/`false`)   | `false`                                                             |
 
 ---
 
@@ -146,6 +148,57 @@ pnpm dev
 ```
 
 La aplicación queda disponible en `http://localhost:5173`.
+
+---
+
+## Documentación de la API (Swagger)
+
+La documentación interactiva se genera con [swaggo/swag](https://github.com/swaggo/swag) y se sirve automáticamente junto con el backend.
+
+### Requisitos
+
+Instala la herramienta `swag` si aún no la tienes:
+
+```bash
+go install github.com/swaggo/swag/cmd/swag@latest
+```
+
+### Habilitar Swagger
+
+La UI solo se monta si la variable de entorno `SWAGGER_ENABLED=true` está definida. En producción omite esta variable o ponla en `false` para que la ruta `/swagger/*` no exista.
+
+```bash
+# backend/.env — entorno local/desarrollo
+SWAGGER_ENABLED=true
+
+# En producción: omitir la variable o dejarla en false
+# SWAGGER_ENABLED=false
+```
+
+### Regenerar los docs
+
+Ejecuta este comando desde la carpeta `backend/` cada vez que modifiques los comentarios de los handlers:
+
+```bash
+cd backend
+swag init -g cmd/api/main.go -o docs
+```
+
+Esto actualiza los archivos `docs/docs.go`, `docs/swagger.json` y `docs/swagger.yaml`.
+
+### Acceder a la UI
+
+Con el backend corriendo (`go run ./cmd/api`), abre en el navegador:
+
+```
+http://localhost:8080/swagger/index.html
+```
+
+Desde ahí puedes explorar todos los endpoints, ver los modelos de request/response y probar las llamadas directamente. Para los endpoints protegidos, haz clic en **Authorize** e ingresa tu token con el formato:
+
+```
+Bearer <access_token>
+```
 
 ---
 

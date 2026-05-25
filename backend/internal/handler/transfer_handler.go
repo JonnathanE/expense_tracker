@@ -18,7 +18,17 @@ func NewTransferHandler(transferService *service.TransferService) *TransferHandl
 	return &TransferHandler{transferService: transferService}
 }
 
-// GET /transfers?date_from=YYYY-MM-DD&date_to=YYYY-MM-DD
+// List godoc
+// @Summary      Listar transferencias
+// @Description  Devuelve las transferencias del usuario en un rango de fechas
+// @Tags         Transfers
+// @Produce      json
+// @Security     BearerAuth
+// @Param        date_from  query     string  false  "Fecha inicio (YYYY-MM-DD)"
+// @Param        date_to    query     string  false  "Fecha fin (YYYY-MM-DD)"
+// @Success      200  {array}   transferResponse
+// @Failure      500  {object}  errorResponse
+// @Router       /transfers [get]
 func (h *TransferHandler) List(w http.ResponseWriter, r *http.Request) {
 	userID := middleware.GetUserID(r)
 	dateFrom := r.URL.Query().Get("date_from")
@@ -32,16 +42,19 @@ func (h *TransferHandler) List(w http.ResponseWriter, r *http.Request) {
 	respondJSON(w, http.StatusOK, transfers)
 }
 
-// POST /transfers
-type transferRequest struct {
-	FromAccountID string  `json:"from_account_id"`
-	ToAccountID   string  `json:"to_account_id"`
-	Amount        float64 `json:"amount"`
-	Fee           float64 `json:"fee"`
-	Description   string  `json:"description"`
-	Date          string  `json:"date"`
-}
-
+// Create godoc
+// @Summary      Crear transferencia
+// @Description  Transfiere fondos entre dos cuentas del usuario. Descuenta de la cuenta origen e incrementa la cuenta destino.
+// @Tags         Transfers
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        body  body      transferRequest  true  "Datos de la transferencia"
+// @Success      201   {object}  transferResponse
+// @Failure      400   {object}  errorResponse
+// @Failure      404   {object}  errorResponse
+// @Failure      500   {object}  errorResponse
+// @Router       /transfers [post]
 func (h *TransferHandler) Create(w http.ResponseWriter, r *http.Request) {
 	userID := middleware.GetUserID(r)
 
@@ -98,7 +111,17 @@ func (h *TransferHandler) Create(w http.ResponseWriter, r *http.Request) {
 	respondJSON(w, http.StatusCreated, transfer)
 }
 
-// DELETE /transfers/{id}
+// Delete godoc
+// @Summary      Eliminar transferencia
+// @Description  Elimina una transferencia y revierte los saldos de ambas cuentas
+// @Tags         Transfers
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id   path  string  true  "ID de la transferencia"
+// @Success      204
+// @Failure      404  {object}  errorResponse
+// @Failure      500  {object}  errorResponse
+// @Router       /transfers/{id} [delete]
 func (h *TransferHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	userID := middleware.GetUserID(r)
 	id := chi.URLParam(r, "id")

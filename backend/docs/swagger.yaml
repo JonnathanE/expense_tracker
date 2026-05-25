@@ -1,0 +1,1051 @@
+basePath: /
+definitions:
+  handler.accountRequest:
+    properties:
+      balance:
+        example: 1500.5
+        type: number
+      color:
+        example: '#6366f1'
+        type: string
+      currency:
+        example: USD
+        type: string
+      exclude_from_stats:
+        example: false
+        type: boolean
+      icon:
+        example: wallet
+        type: string
+      name:
+        example: Cuenta corriente
+        type: string
+    type: object
+  handler.accountResponse:
+    properties:
+      balance:
+        example: 1500.5
+        type: number
+      color:
+        example: '#6366f1'
+        type: string
+      created_at:
+        type: string
+      currency:
+        example: USD
+        type: string
+      exclude_from_stats:
+        example: false
+        type: boolean
+      icon:
+        example: wallet
+        type: string
+      id:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+      name:
+        example: Cuenta corriente
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+    type: object
+  handler.categoryRequest:
+    properties:
+      color:
+        example: '#f59e0b'
+        type: string
+      icon:
+        example: "\U0001F354"
+        type: string
+      name:
+        example: Alimentación
+        type: string
+      type:
+        example: expense
+        type: string
+    type: object
+  handler.categoryResponse:
+    properties:
+      color:
+        example: '#f59e0b'
+        type: string
+      created_at:
+        type: string
+      icon:
+        example: "\U0001F354"
+        type: string
+      id:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+      name:
+        example: Alimentación
+        type: string
+      type:
+        example: expense
+        type: string
+      user_id:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+    type: object
+  handler.categorySummaryResponse:
+    properties:
+      category_id:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+      category_name:
+        example: Alimentación
+        type: string
+      color:
+        example: '#f59e0b'
+        type: string
+      icon:
+        example: "\U0001F354"
+        type: string
+      total:
+        example: 350
+        type: number
+      tx_count:
+        example: 12
+        type: integer
+      type:
+        example: expense
+        type: string
+    type: object
+  handler.errorResponse:
+    properties:
+      error:
+        example: invalid_credentials
+        type: string
+    type: object
+  handler.forgotPasswordRequest:
+    properties:
+      email:
+        example: juan@example.com
+        type: string
+    type: object
+  handler.loginRequest:
+    properties:
+      email:
+        example: juan@example.com
+        type: string
+      password:
+        example: secret123
+        type: string
+    type: object
+  handler.loginResponse:
+    properties:
+      access_token:
+        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        type: string
+      refresh_token:
+        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        type: string
+      user:
+        $ref: '#/definitions/handler.userInfo'
+    type: object
+  handler.messageResponse:
+    properties:
+      message:
+        example: operation_success
+        type: string
+    type: object
+  handler.refreshRequest:
+    properties:
+      refresh_token:
+        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        type: string
+    type: object
+  handler.registerRequest:
+    properties:
+      email:
+        example: juan@example.com
+        type: string
+      name:
+        example: Juan Pérez
+        type: string
+      password:
+        example: secret123
+        type: string
+    type: object
+  handler.registerResponse:
+    properties:
+      message:
+        example: register_success
+        type: string
+      user_id:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+    type: object
+  handler.resetPasswordRequest:
+    properties:
+      new_password:
+        example: newsecret123
+        type: string
+      token:
+        example: abc123token
+        type: string
+    type: object
+  handler.summaryResponse:
+    properties:
+      balance:
+        example: 1800
+        type: number
+      by_category:
+        items:
+          $ref: '#/definitions/handler.categorySummaryResponse'
+        type: array
+      month:
+        example: 2025-05
+        type: string
+      total_expense:
+        example: 1200
+        type: number
+      total_income:
+        example: 3000
+        type: number
+    type: object
+  handler.tokenResponse:
+    properties:
+      access_token:
+        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        type: string
+      refresh_token:
+        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        type: string
+    type: object
+  handler.transactionRequest:
+    properties:
+      account_id:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+      amount:
+        example: 50
+        type: number
+      category_id:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+      date:
+        example: "2025-05-25"
+        type: string
+      description:
+        example: Almuerzo
+        type: string
+      type:
+        example: expense
+        type: string
+    type: object
+  handler.transactionResponse:
+    properties:
+      account_id:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+      account_name:
+        example: Cuenta corriente
+        type: string
+      amount:
+        example: 50
+        type: number
+      category_id:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+      category_name:
+        example: Alimentación
+        type: string
+      created_at:
+        type: string
+      date:
+        type: string
+      description:
+        example: Almuerzo
+        type: string
+      id:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+      type:
+        example: expense
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+    type: object
+  handler.transferRequest:
+    properties:
+      amount:
+        example: 200
+        type: number
+      date:
+        example: "2025-05-25"
+        type: string
+      description:
+        example: Transferencia mensual
+        type: string
+      fee:
+        example: 0
+        type: number
+      from_account_id:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+      to_account_id:
+        example: 550e8400-e29b-41d4-a716-446655440001
+        type: string
+    type: object
+  handler.transferResponse:
+    properties:
+      amount:
+        example: 200
+        type: number
+      created_at:
+        type: string
+      date:
+        type: string
+      description:
+        example: Transferencia mensual
+        type: string
+      fee:
+        example: 0
+        type: number
+      from_account_id:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+      from_account_name:
+        example: Cuenta corriente
+        type: string
+      id:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+      to_account_id:
+        example: 550e8400-e29b-41d4-a716-446655440001
+        type: string
+      to_account_name:
+        example: Ahorros
+        type: string
+      user_id:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+    type: object
+  handler.userInfo:
+    properties:
+      email:
+        example: juan@example.com
+        type: string
+      id:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+      name:
+        example: Juan Pérez
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: API REST para gestión de gastos personales
+  title: Expense Tracker API
+  version: "1.0"
+paths:
+  /accounts:
+    get:
+      description: Devuelve todas las cuentas del usuario autenticado
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/handler.accountResponse'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Listar cuentas
+      tags:
+      - Accounts
+    post:
+      consumes:
+      - application/json
+      description: Crea una nueva cuenta bancaria para el usuario autenticado
+      parameters:
+      - description: Datos de la cuenta
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handler.accountRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/handler.accountResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Crear cuenta
+      tags:
+      - Accounts
+  /accounts/{id}:
+    delete:
+      description: Elimina una cuenta. No se puede eliminar la última cuenta del usuario.
+      parameters:
+      - description: ID de la cuenta
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Eliminar cuenta
+      tags:
+      - Accounts
+    put:
+      consumes:
+      - application/json
+      description: Actualiza nombre, ícono, color, saldo y configuración de una cuenta.
+        La moneda no puede cambiarse.
+      parameters:
+      - description: ID de la cuenta
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Datos a actualizar
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handler.accountRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.accountResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Actualizar cuenta
+      tags:
+      - Accounts
+  /auth/activate:
+    get:
+      description: Activa la cuenta del usuario mediante el token enviado por email
+      parameters:
+      - description: Token de activación
+        in: query
+        name: token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.messageResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "410":
+          description: Gone
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      summary: Activar cuenta
+      tags:
+      - Auth
+  /auth/forgot-password:
+    post:
+      consumes:
+      - application/json
+      description: Envía un email con enlace para restablecer la contraseña (responde
+        igual exista o no el email)
+      parameters:
+      - description: Email del usuario
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handler.forgotPasswordRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.messageResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      summary: Solicitar reset de contraseña
+      tags:
+      - Auth
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Autentica al usuario y devuelve tokens de acceso y refresco
+      parameters:
+      - description: Credenciales
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handler.loginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.loginResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      summary: Iniciar sesión
+      tags:
+      - Auth
+  /auth/logout:
+    post:
+      description: Revoca todos los refresh tokens del usuario autenticado
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.messageResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Cerrar sesión
+      tags:
+      - Auth
+  /auth/refresh:
+    post:
+      consumes:
+      - application/json
+      description: Rota el refresh token y devuelve un nuevo par de tokens
+      parameters:
+      - description: Refresh token
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handler.refreshRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.tokenResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      summary: Refrescar tokens
+      tags:
+      - Auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Crea un nuevo usuario y envía email de activación
+      parameters:
+      - description: Datos de registro
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handler.registerRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/handler.registerResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      summary: Registrar usuario
+      tags:
+      - Auth
+  /auth/reset-password:
+    post:
+      consumes:
+      - application/json
+      description: Establece una nueva contraseña usando el token de reset
+      parameters:
+      - description: Token y nueva contraseña
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handler.resetPasswordRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.messageResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "410":
+          description: Gone
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      summary: Restablecer contraseña
+      tags:
+      - Auth
+  /categories:
+    get:
+      description: Devuelve todas las categorías del usuario autenticado
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/handler.categoryResponse'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Listar categorías
+      tags:
+      - Categories
+    post:
+      consumes:
+      - application/json
+      description: Crea una nueva categoría de tipo income o expense
+      parameters:
+      - description: Datos de la categoría
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handler.categoryRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/handler.categoryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Crear categoría
+      tags:
+      - Categories
+  /categories/{id}:
+    delete:
+      description: Elimina una categoría del usuario autenticado
+      parameters:
+      - description: ID de la categoría
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Eliminar categoría
+      tags:
+      - Categories
+    put:
+      consumes:
+      - application/json
+      description: Actualiza nombre, ícono y color de una categoría
+      parameters:
+      - description: ID de la categoría
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Datos a actualizar
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handler.categoryRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.categoryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Actualizar categoría
+      tags:
+      - Categories
+  /summary:
+    get:
+      description: Devuelve ingresos, gastos, balance y desglose por categoría en
+        un rango de fechas. Si no se especifican fechas, usa el mes actual.
+      parameters:
+      - description: Fecha inicio (YYYY-MM-DD)
+        in: query
+        name: date_from
+        type: string
+      - description: Fecha fin (YYYY-MM-DD)
+        in: query
+        name: date_to
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.summaryResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Obtener resumen financiero
+      tags:
+      - Summary
+  /transactions:
+    get:
+      description: Devuelve transacciones del usuario con filtros opcionales de fecha,
+        tipo, cuenta y categoría
+      parameters:
+      - description: Fecha inicio (YYYY-MM-DD)
+        in: query
+        name: date_from
+        type: string
+      - description: Fecha fin (YYYY-MM-DD)
+        in: query
+        name: date_to
+        type: string
+      - description: 'Tipo: income o expense'
+        in: query
+        name: type
+        type: string
+      - description: ID de cuenta
+        in: query
+        name: account_id
+        type: string
+      - description: ID de categoría
+        in: query
+        name: category_id
+        type: string
+      - description: 'Orden: asc o desc (por defecto desc)'
+        in: query
+        name: sort
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/handler.transactionResponse'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Listar transacciones
+      tags:
+      - Transactions
+    post:
+      consumes:
+      - application/json
+      description: Crea una nueva transacción y ajusta el saldo de la cuenta si se
+        especifica
+      parameters:
+      - description: Datos de la transacción
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handler.transactionRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/handler.transactionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Crear transacción
+      tags:
+      - Transactions
+  /transactions/{id}:
+    delete:
+      description: Elimina una transacción y revierte el saldo de la cuenta asociada
+      parameters:
+      - description: ID de la transacción
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Eliminar transacción
+      tags:
+      - Transactions
+    put:
+      consumes:
+      - application/json
+      description: Actualiza una transacción y recalcula el saldo de la cuenta afectada
+      parameters:
+      - description: ID de la transacción
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Datos a actualizar
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handler.transactionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.transactionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Actualizar transacción
+      tags:
+      - Transactions
+  /transfers:
+    get:
+      description: Devuelve las transferencias del usuario en un rango de fechas
+      parameters:
+      - description: Fecha inicio (YYYY-MM-DD)
+        in: query
+        name: date_from
+        type: string
+      - description: Fecha fin (YYYY-MM-DD)
+        in: query
+        name: date_to
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/handler.transferResponse'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Listar transferencias
+      tags:
+      - Transfers
+    post:
+      consumes:
+      - application/json
+      description: Transfiere fondos entre dos cuentas del usuario. Descuenta de la
+        cuenta origen e incrementa la cuenta destino.
+      parameters:
+      - description: Datos de la transferencia
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handler.transferRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/handler.transferResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Crear transferencia
+      tags:
+      - Transfers
+  /transfers/{id}:
+    delete:
+      description: Elimina una transferencia y revierte los saldos de ambas cuentas
+      parameters:
+      - description: ID de la transferencia
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Eliminar transferencia
+      tags:
+      - Transfers
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

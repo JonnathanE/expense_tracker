@@ -8,12 +8,13 @@ import (
 )
 
 type Config struct {
-	Port         string
-	DatabaseURL  string
-	JWTSecret    string
-	FrontendURL  string
-	ResendAPIKey string
-	EmailFrom    string
+	Port           string
+	DatabaseURL    string
+	JWTSecret      string
+	FrontendURL    string
+	ResendAPIKey   string
+	EmailFrom      string
+	SwaggerEnabled bool
 }
 
 func Load() *Config {
@@ -22,12 +23,13 @@ func Load() *Config {
 	}
 
 	return &Config{
-		Port:         getEnv("PORT", "8080"),
-		DatabaseURL:  getEnv("DATABASE_URL", ""),
-		JWTSecret:    getEnv("JWT_SECRET", ""),
-		FrontendURL:  getEnv("FRONTEND_URL", "http://localhost:5173"),
-		ResendAPIKey: getEnv("RESEND_API_KEY", ""),
-		EmailFrom:    getEnv("EMAIL_FROM", ""),
+		Port:           getEnv("PORT", "8080"),
+		DatabaseURL:    getEnv("DATABASE_URL", ""),
+		JWTSecret:      getEnv("JWT_SECRET", ""),
+		FrontendURL:    getEnv("FRONTEND_URL", "http://localhost:5173"),
+		ResendAPIKey:   getEnv("RESEND_API_KEY", ""),
+		EmailFrom:      getEnv("EMAIL_FROM", ""),
+		SwaggerEnabled: getEnv("SWAGGER_ENABLED", "false") == "true",
 	}
 }
 

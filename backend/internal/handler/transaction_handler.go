@@ -24,6 +24,21 @@ func NewTransactionHandler(
 
 // ── GET /transactions ─────────────────────────────────────────────────────────
 
+// List godoc
+// @Summary      Listar transacciones
+// @Description  Devuelve transacciones del usuario con filtros opcionales de fecha, tipo, cuenta y categoría
+// @Tags         Transactions
+// @Produce      json
+// @Security     BearerAuth
+// @Param        date_from    query     string  false  "Fecha inicio (YYYY-MM-DD)"
+// @Param        date_to      query     string  false  "Fecha fin (YYYY-MM-DD)"
+// @Param        type         query     string  false  "Tipo: income o expense"
+// @Param        account_id   query     string  false  "ID de cuenta"
+// @Param        category_id  query     string  false  "ID de categoría"
+// @Param        sort         query     string  false  "Orden: asc o desc (por defecto desc)"
+// @Success      200  {array}   transactionResponse
+// @Failure      500  {object}  errorResponse
+// @Router       /transactions [get]
 func (h *TransactionHandler) List(w http.ResponseWriter, r *http.Request) {
 	userID := middleware.GetUserID(r)
 
@@ -47,15 +62,18 @@ func (h *TransactionHandler) List(w http.ResponseWriter, r *http.Request) {
 
 // ── POST /transactions ────────────────────────────────────────────────────────
 
-type transactionRequest struct {
-	AccountID   *string `json:"account_id"`
-	CategoryID  *string `json:"category_id"`
-	Amount      float64 `json:"amount"`
-	Type        string  `json:"type"`
-	Description string  `json:"description"`
-	Date        string  `json:"date"`
-}
-
+// Create godoc
+// @Summary      Crear transacción
+// @Description  Crea una nueva transacción y ajusta el saldo de la cuenta si se especifica
+// @Tags         Transactions
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        body  body      transactionRequest  true  "Datos de la transacción"
+// @Success      201   {object}  transactionResponse
+// @Failure      400   {object}  errorResponse
+// @Failure      500   {object}  errorResponse
+// @Router       /transactions [post]
 func (h *TransactionHandler) Create(w http.ResponseWriter, r *http.Request) {
 	userID := middleware.GetUserID(r)
 
@@ -94,6 +112,20 @@ func (h *TransactionHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 // ── PUT /transactions/{id} ────────────────────────────────────────────────────
 
+// Update godoc
+// @Summary      Actualizar transacción
+// @Description  Actualiza una transacción y recalcula el saldo de la cuenta afectada
+// @Tags         Transactions
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id    path      string              true  "ID de la transacción"
+// @Param        body  body      transactionRequest  true  "Datos a actualizar"
+// @Success      200   {object}  transactionResponse
+// @Failure      400   {object}  errorResponse
+// @Failure      404   {object}  errorResponse
+// @Failure      500   {object}  errorResponse
+// @Router       /transactions/{id} [put]
 func (h *TransactionHandler) Update(w http.ResponseWriter, r *http.Request) {
 	userID := middleware.GetUserID(r)
 	id := chi.URLParam(r, "id")
@@ -126,6 +158,16 @@ func (h *TransactionHandler) Update(w http.ResponseWriter, r *http.Request) {
 
 // ── DELETE /transactions/{id} ─────────────────────────────────────────────────
 
+// Delete godoc
+// @Summary      Eliminar transacción
+// @Description  Elimina una transacción y revierte el saldo de la cuenta asociada
+// @Tags         Transactions
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id   path  string  true  "ID de la transacción"
+// @Success      204
+// @Failure      404  {object}  errorResponse
+// @Router       /transactions/{id} [delete]
 func (h *TransactionHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	userID := middleware.GetUserID(r)
 	id := chi.URLParam(r, "id")
