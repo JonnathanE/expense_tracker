@@ -13,20 +13,28 @@ import (
 
 type TransactionHandler struct {
 	transactionService *service.TransactionService
+	accountService     *service.AccountService
 }
 
-func NewTransactionHandler(transactionService *service.TransactionService) *TransactionHandler {
-	return &TransactionHandler{transactionService: transactionService}
+func NewTransactionHandler(
+	transactionService *service.TransactionService,
+	accountService *service.AccountService,
+) *TransactionHandler {
+	return &TransactionHandler{transactionService: transactionService, accountService: accountService}
 }
 
-// ── GET /transactions?month=2024-03&type=expense ──────────────────────────────
+// ── GET /transactions?date_from=2025-05-01&date_to=2025-05-31&type=expense&account_id=...&category_id=...&sort=asc ──
 
 func (h *TransactionHandler) List(w http.ResponseWriter, r *http.Request) {
 	userID := middleware.GetUserID(r)
 
 	filters := service.TransactionFilters{
-		Month: r.URL.Query().Get("month"),
-		Type:  r.URL.Query().Get("type"),
+		DateFrom:   r.URL.Query().Get("date_from"),
+		DateTo:     r.URL.Query().Get("date_to"),
+		Type:       r.URL.Query().Get("type"),
+		AccountID:  r.URL.Query().Get("account_id"),
+		CategoryID: r.URL.Query().Get("category_id"),
+		Sort:       r.URL.Query().Get("sort"),
 	}
 
 	transactions, err := h.transactionService.List(r.Context(), userID, filters)
@@ -41,6 +49,7 @@ func (h *TransactionHandler) List(w http.ResponseWriter, r *http.Request) {
 // ── POST /transactions ────────────────────────────────────────────────────────
 
 type transactionRequest struct {
+	AccountID   *string `json:"account_id"`
 	CategoryID  *string `json:"category_id"`
 	Amount      float64 `json:"amount"`
 	Type        string  `json:"type"`
@@ -63,8 +72,9 @@ func (h *TransactionHandler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	transaction, err := h.transactionService.Create(
-		r.Context(), userID, req.CategoryID,
+		r.Context(), userID, req.AccountID, req.CategoryID,
 		req.Amount, req.Type, req.Description, req.Date,
+		h.accountService,
 	)
 	if err != nil {
 		if strings.Contains(err.Error(), "tipo debe ser") ||
@@ -95,6 +105,7 @@ func (h *TransactionHandler) Update(w http.ResponseWriter, r *http.Request) {
 	transaction, err := h.transactionService.Update(
 		r.Context(), id, userID, req.CategoryID,
 		req.Amount, req.Type, req.Description, req.Date,
+		h.accountService,
 	)
 	if err != nil {
 		if strings.Contains(err.Error(), "fecha") {
@@ -114,7 +125,7 @@ func (h *TransactionHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	userID := middleware.GetUserID(r)
 	id := chi.URLParam(r, "id")
 
-	if err := h.transactionService.Delete(r.Context(), id, userID); err != nil {
+	if err := h.transactionService.Delete(r.Context(), id, userID, h.accountService); err != nil {
 		respondError(w, http.StatusNotFound, err.Error())
 		return
 	}

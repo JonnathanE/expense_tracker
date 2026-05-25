@@ -17,18 +17,22 @@ func NewSummaryService(db *pgxpool.Pool) *SummaryService {
 	return &SummaryService{db: db}
 }
 
-func (s *SummaryService) Get(ctx context.Context, userID, month string) (*model.Summary, error) {
-	summary := &model.Summary{Month: month}
+// Get calcula totales y breakdown por categoría para el rango [dateFrom, dateTo].
+// Solo incluye transacciones cuya cuenta tenga exclude_from_stats = FALSE
+// (o que no tengan cuenta asignada).
+func (s *SummaryService) Get(ctx context.Context, userID, dateFrom, dateTo string) (*model.Summary, error) {
+	summary := &model.Summary{Month: dateFrom[:7]} // conservamos YYYY-MM para compatibilidad
 
-	// ── 1. Totales de ingresos y gastos ──────────────────────────────────────
-	// Una sola query agrupa por type y nos da ambos totales de una vez
+	// 1. Totales por tipo — excluir cuentas con exclude_from_stats = TRUE
 	rows, err := s.db.Query(ctx,
-		`SELECT type, COALESCE(SUM(amount), 0)
-		 FROM transactions
-		 WHERE user_id = $1
-		   AND TO_CHAR(date, 'YYYY-MM') = $2
-		 GROUP BY type`,
-		userID, month,
+		`SELECT t.type, COALESCE(SUM(t.amount), 0)
+		 FROM transactions t
+		 LEFT JOIN accounts a ON a.id = t.account_id
+		 WHERE t.user_id = $1
+		   AND t.date BETWEEN $2 AND $3
+		   AND (t.account_id IS NULL OR a.exclude_from_stats = FALSE)
+		 GROUP BY t.type`,
+		userID, dateFrom, dateTo,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("error calculando totales: %w", err)
@@ -50,44 +54,40 @@ func (s *SummaryService) Get(ctx context.Context, userID, month string) (*model.
 
 	summary.Balance = summary.TotalIncome - summary.TotalExpense
 
-	// ── 2. Desglose por categoría ─────────────────────────────────────────────
-	// LEFT JOIN para incluir categorías aunque no tengan transacciones ese mes.
-	// UNION ALL con una segunda parte que captura transacciones sin categoría.
+	// 2. Breakdown por categoría — misma condición exclude_from_stats
 	catRows, err := s.db.Query(ctx,
 		`SELECT
-		     c.id,
-		     c.name,
-		     c.icon,
-		     c.color,
-		     c.type,
-		     COALESCE(SUM(t.amount), 0)  AS total,
-		     COUNT(t.id)                 AS tx_count
+		     c.id, c.name, c.icon, c.color, c.type,
+		     COALESCE(SUM(t.amount), 0) AS total,
+		     COUNT(t.id)                AS tx_count
 		 FROM categories c
 		 LEFT JOIN transactions t
 		     ON t.category_id = c.id
 		     AND t.user_id = $1
-		     AND TO_CHAR(t.date, 'YYYY-MM') = $2
+		     AND t.date BETWEEN $2 AND $3
+		     AND (t.account_id IS NULL OR EXISTS (
+		             SELECT 1 FROM accounts a
+		             WHERE a.id = t.account_id AND a.exclude_from_stats = FALSE
+		         ))
 		 WHERE c.user_id = $1
 		 GROUP BY c.id, c.name, c.icon, c.color, c.type
 
 		 UNION ALL
 
 		 SELECT
-		     NULL,
-		     NULL,
-		     NULL,
-		     NULL,
-		     t.type,
+		     NULL, NULL, NULL, NULL, t.type,
 		     COALESCE(SUM(t.amount), 0),
 		     COUNT(t.id)
 		 FROM transactions t
+		 LEFT JOIN accounts a ON a.id = t.account_id
 		 WHERE t.user_id = $1
 		   AND t.category_id IS NULL
-		   AND TO_CHAR(t.date, 'YYYY-MM') = $2
+		   AND t.date BETWEEN $2 AND $3
+		   AND (t.account_id IS NULL OR a.exclude_from_stats = FALSE)
 		 GROUP BY t.type
 
 		 ORDER BY total DESC`,
-		userID, month,
+		userID, dateFrom, dateTo,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("error calculando categorías: %w", err)

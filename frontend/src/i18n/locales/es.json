@@ -22,6 +22,7 @@
     "nav": {
         "dashboard": "Dashboard",
         "transactions": "Transacciones",
+        "accounts": "Cuentas",
         "categories": "Categorías"
     },
     "login": {
@@ -112,22 +113,6 @@
         "errorLoading": "Error cargando el resumen. Intenta de nuevo.",
         "byCategory": "Por categoría"
     },
-    "transactions": {
-        "title": "Transacciones",
-        "recordsThisMonth": "{{count}} registros este mes",
-        "new": "Nueva",
-        "editTitle": "Editar transacción",
-        "newTitle": "Nueva transacción",
-        "deleteTitle": "¿Eliminar transacción?",
-        "deleteDescription": "Esta acción no se puede deshacer. La transacción será eliminada permanentemente.",
-        "deleteConfirm": "Eliminar",
-        "deleting": "Eliminando...",
-        "empty": "No hay transacciones este mes.",
-        "createFirst": "Crear la primera",
-        "created": "Transacción creada",
-        "updated": "Transacción actualizada",
-        "deleted": "Transacción eliminada"
-    },
     "categories": {
         "title": "Categorías",
         "createdCount": "{{count}} categorías creadas",
@@ -148,23 +133,6 @@
     "navUser": {
         "logout": "Cerrar sesión",
         "loggedOut": "Sesión cerrada correctamente"
-    },
-    "transactionForm": {
-        "type": "Tipo",
-        "expense": "💸 Gasto",
-        "income": "💵 Ingreso",
-        "amount": "Monto (USD)",
-        "amountPlaceholder": "0.00",
-        "category": "Categoría",
-        "noCategory": "Sin categoría",
-        "searchCategory": "Buscar categoría...",
-        "description": "Descripción",
-        "descriptionPlaceholder": "Descripción opcional",
-        "date": "Fecha",
-        "cancel": "Cancelar",
-        "saving": "Guardando...",
-        "saveChanges": "Guardar cambios",
-        "create": "Crear"
     },
     "categoryForm": {
         "name": "Nombre",
@@ -240,6 +208,121 @@
         "colorRequired": "Selecciona un color",
         "amountInvalid": "Ingresa un monto válido",
         "amountPositive": "El monto debe ser mayor a 0",
-        "dateRequired": "La fecha es requerida"
+        "dateRequired": "La fecha es requerida",
+        "currencyRequired": "Selecciona una moneda",
+        "balanceMin": "El saldo no puede ser negativo",
+        "accountRequired": "Selecciona una cuenta",
+        "feeMin": "La comisión no puede ser negativa"
+    },
+    "transactions": {
+        "title": "Transacciones",
+        "tabLabel": "Transacciones",
+        "recordsThisMonth": "{{count}} registros este período",
+        "new": "Nueva",
+        "editTitle": "Editar transacción",
+        "newTitle": "Nueva transacción",
+        "deleteTitle": "¿Eliminar transacción?",
+        "deleteDescription": "Esta acción no se puede deshacer. La transacción será eliminada permanentemente.",
+        "deleteConfirm": "Eliminar",
+        "deleting": "Eliminando...",
+        "empty": "No hay transacciones este período.",
+        "createFirst": "Crear la primera",
+        "created": "Transacción creada",
+        "updated": "Transacción actualizada",
+        "deleted": "Transacción eliminada"
+    },
+    "accounts": {
+        "title": "Cuentas",
+        "createdCount": "{{count}} cuentas",
+        "new": "Nueva cuenta",
+        "editTitle": "Editar cuenta",
+        "newTitle": "Nueva cuenta",
+        "deleteTitle": "¿Eliminar cuenta?",
+        "deleteDescription": "Esta acción no se puede deshacer. La cuenta y todos sus datos serán eliminados permanentemente.",
+        "deleteConfirm": "Eliminar",
+        "deleting": "Eliminando...",
+        "empty": "Sin cuentas aún.",
+        "createFirst": "Crear la primera",
+        "created": "Cuenta creada",
+        "updated": "Cuenta actualizada",
+        "deleted": "Cuenta eliminada"
+    },
+    "accountForm": {
+        "name": "Nombre",
+        "namePlaceholder": "Ej: Cuenta corriente",
+        "balance": "Saldo inicial",
+        "balanceEdit": "Saldo",
+        "currency": "Moneda",
+        "currencyLocked": "No se puede cambiar",
+        "icon": "Ícono",
+        "color": "Color",
+        "excludeFromStats": "Excluir de estadísticas",
+        "excludeFromStatsHint": "Las transacciones de esta cuenta no afectarán el resumen.",
+        "cancel": "Cancelar",
+        "saving": "Guardando...",
+        "saveChanges": "Guardar cambios",
+        "create": "Crear cuenta"
+    },
+    "accountCard": {
+        "excluded": "Excluida"
+    },
+    "transfers": {
+        "tabLabel": "Transferencias",
+        "recordsThisPeriod": "{{count}} transferencias este período",
+        "new": "Nueva transferencia",
+        "newTitle": "Nueva transferencia",
+        "deleteTitle": "¿Eliminar transferencia?",
+        "deleteDescription": "Esta acción no se puede deshacer. La transferencia será eliminada y los saldos de las cuentas serán revertidos.",
+        "deleteConfirm": "Eliminar",
+        "deleting": "Eliminando...",
+        "empty": "No hay transferencias este período.",
+        "createFirst": "Crear la primera",
+        "needTwoAccounts": "Necesitas al menos 2 cuentas para realizar una transferencia.",
+        "created": "Transferencia creada",
+        "deleted": "Transferencia eliminada"
+    },
+    "transferForm": {
+        "fromAccount": "Cuenta origen",
+        "toAccount": "Cuenta destino",
+        "selectAccount": "Seleccionar cuenta",
+        "amount": "Monto",
+        "fee": "Comisión",
+        "description": "Descripción",
+        "descriptionPlaceholder": "Descripción opcional",
+        "date": "Fecha",
+        "cancel": "Cancelar",
+        "saving": "Guardando...",
+        "create": "Transferir"
+    },
+    "transferItem": {
+        "fee": "Comisión:"
+    },
+    "transactionForm": {
+        "type": "Tipo",
+        "expense": "💸 Gasto",
+        "income": "💵 Ingreso",
+        "amount": "Monto (USD)",
+        "amountPlaceholder": "0.00",
+        "account": "Cuenta",
+        "noAccount": "Sin cuenta",
+        "category": "Categoría",
+        "noCategory": "Sin categoría",
+        "searchCategory": "Buscar categoría...",
+        "description": "Descripción",
+        "descriptionPlaceholder": "Descripción opcional",
+        "date": "Fecha",
+        "cancel": "Cancelar",
+        "saving": "Guardando...",
+        "saveChanges": "Guardar cambios",
+        "create": "Crear"
+    },
+    "filters": {
+        "all": "Todos los tipos",
+        "expenses": "Gastos",
+        "incomes": "Ingresos",
+        "allAccounts": "Todas las cuentas",
+        "allCategories": "Todas las categorías",
+        "newest": "Más recientes",
+        "oldest": "Más antiguos"
     }
 }

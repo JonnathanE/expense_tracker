@@ -22,7 +22,11 @@ func NewUserService(db *pgxpool.Pool) *UserService {
 }
 
 // Register crea un usuario nuevo inactivo y devuelve el token de activación
-func (s *UserService) Register(ctx context.Context, name, email, password string) (*model.User, string, error) {
+func (s *UserService) Register(
+	ctx context.Context,
+	name, email, password string,
+	accountService *AccountService,
+) (*model.User, string, error) {
 	// 1. Verificar si el email ya existe
 	var exists bool
 	err := s.db.QueryRow(ctx,
@@ -62,6 +66,13 @@ func (s *UserService) Register(ctx context.Context, name, email, password string
 	)
 	if err != nil {
 		return nil, "", fmt.Errorf("error creando usuario: %w", err)
+	}
+
+	// 5. Crear cuenta Cash por defecto
+	currency := "USD" // o leerlo de la config
+	if err := accountService.CreateDefault(ctx, user.ID, currency); err != nil {
+		// Log pero no falla el registro
+		fmt.Printf("⚠️  Error creando cuenta por defecto: %v\n", err)
 	}
 
 	return &user, activationToken, nil

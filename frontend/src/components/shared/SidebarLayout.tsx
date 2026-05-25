@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { ArrowLeftRight, LayoutDashboard, Tag } from "lucide-react";
+import { ArrowLeftRight, LayoutDashboard, Tag, Wallet } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import logo from "@/assets/logo.png";
 import { NavUser } from "@/components/shared/NavUser";
@@ -23,6 +23,7 @@ import type { User } from "@/types";
 const NAV_ITEMS = [
     { to: "/", labelKey: "nav.dashboard", icon: LayoutDashboard },
     { to: "/transactions", labelKey: "nav.transactions", icon: ArrowLeftRight },
+    { to: "/accounts", labelKey: "nav.accounts", icon: Wallet },
     { to: "/categories", labelKey: "nav.categories", icon: Tag },
 ] as const;
 

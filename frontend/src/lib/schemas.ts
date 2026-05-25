@@ -43,6 +43,7 @@ export function createSchemas(t: TFunction) {
     });
 
     const transactionSchema = z.object({
+        account_id: z.string().nullable(),
         category_id: z.string().nullable(),
         amount: z
             .number({ invalid_type_error: t("schema.amountInvalid") })
@@ -69,11 +70,37 @@ export function createSchemas(t: TFunction) {
             path: ["confirmPassword"],
         });
 
+    const accountSchema = z.object({
+        name: z.string().min(1, t("schema.nameRequired")),
+        icon: z.string().min(1, t("schema.iconRequired")),
+        color: z.string().min(1, t("schema.colorRequired")),
+        balance: z
+            .number({ invalid_type_error: t("schema.amountInvalid") })
+            .min(0, t("schema.balanceMin")),
+        currency: z.string().min(1, t("schema.currencyRequired")),
+        exclude_from_stats: z.boolean(),
+    });
+
+    const transferSchema = z.object({
+        from_account_id: z.string().min(1, t("schema.accountRequired")),
+        to_account_id: z.string().min(1, t("schema.accountRequired")),
+        amount: z
+            .number({ invalid_type_error: t("schema.amountInvalid") })
+            .positive(t("schema.amountPositive")),
+        fee: z
+            .number({ invalid_type_error: t("schema.amountInvalid") })
+            .min(0, t("schema.feeMin")),
+        description: z.string(),
+        date: z.string().min(1, t("schema.dateRequired")),
+    });
+
     return {
         loginSchema,
         registerSchema,
         categorySchema,
         transactionSchema,
+        accountSchema,
+        transferSchema,
         forgotPasswordSchema,
         resetPasswordSchema,
     };
@@ -88,5 +115,7 @@ export type LoginFormData = z.infer<typeof _base.loginSchema>;
 export type RegisterFormData = z.infer<typeof _base.registerSchema>;
 export type CategoryFormData = z.infer<typeof _base.categorySchema>;
 export type TransactionFormData = z.infer<typeof _base.transactionSchema>;
+export type AccountFormData = z.infer<typeof _base.accountSchema>;
+export type TransferFormData = z.infer<typeof _base.transferSchema>;
 export type ForgotPasswordFormData = z.infer<typeof _base.forgotPasswordSchema>;
 export type ResetPasswordFormData = z.infer<typeof _base.resetPasswordSchema>;

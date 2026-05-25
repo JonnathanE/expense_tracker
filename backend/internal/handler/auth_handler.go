@@ -15,6 +15,7 @@ type AuthHandler struct {
 	emailService   *service.EmailService
 	jwtService     *service.JWTService
 	refreshService *service.RefreshTokenService
+	accountService *service.AccountService
 }
 
 func NewAuthHandler(
@@ -22,12 +23,14 @@ func NewAuthHandler(
 	emailService *service.EmailService,
 	jwtService *service.JWTService,
 	refreshService *service.RefreshTokenService,
+	accountService *service.AccountService,
 ) *AuthHandler {
 	return &AuthHandler{
 		userService:    userService,
 		emailService:   emailService,
 		jwtService:     jwtService,
 		refreshService: refreshService,
+		accountService: accountService,
 	}
 }
 
@@ -64,7 +67,7 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Crear usuario
-	user, token, err := h.userService.Register(r.Context(), req.Name, req.Email, req.Password)
+	user, token, err := h.userService.Register(r.Context(), req.Name, req.Email, req.Password, h.accountService)
 	if err != nil {
 		if strings.Contains(err.Error(), "ya está registrado") {
 			respondError(w, http.StatusConflict, err.Error())

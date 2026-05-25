@@ -16,24 +16,24 @@ func NewSummaryHandler(summaryService *service.SummaryService) *SummaryHandler {
 	return &SummaryHandler{summaryService: summaryService}
 }
 
-// ── GET /summary?month=2025-05 ────────────────────────────────────────────────
-
+// GET /summary?date_from=2025-05-01&date_to=2025-05-31
+// Fallback: si no se proveen, usa el mes actual
 func (h *SummaryHandler) Get(w http.ResponseWriter, r *http.Request) {
 	userID := middleware.GetUserID(r)
 
-	// Si no viene el mes, usamos el mes actual
-	month := r.URL.Query().Get("month")
-	if month == "" {
-		month = time.Now().Format("2006-01")
+	dateFrom := r.URL.Query().Get("date_from")
+	dateTo := r.URL.Query().Get("date_to")
+
+	// Fallback al mes actual si no se envían los rangos
+	if dateFrom == "" || dateTo == "" {
+		now := time.Now()
+		first := time.Date(now.Year(), now.Month(), 1, 0, 0, 0, 0, time.UTC)
+		last := first.AddDate(0, 1, -1)
+		dateFrom = first.Format("2006-01-02")
+		dateTo = last.Format("2006-01-02")
 	}
 
-	// Validar formato del mes
-	if len(month) != 7 || month[4] != '-' {
-		respondError(w, http.StatusBadRequest, "formato de mes inválido, usa YYYY-MM")
-		return
-	}
-
-	summary, err := h.summaryService.Get(r.Context(), userID, month)
+	summary, err := h.summaryService.Get(r.Context(), userID, dateFrom, dateTo)
 	if err != nil {
 		respondError(w, http.StatusInternalServerError, "error calculando resumen")
 		return

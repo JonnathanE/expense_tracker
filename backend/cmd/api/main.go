@@ -36,12 +36,16 @@ func main() {
 	categoryService := service.NewCategoryService(pool)
 	transactionService := service.NewTransactionService(pool)
 	summaryService := service.NewSummaryService(pool)
+	accountService := service.NewAccountService(pool)
+	transferService := service.NewTransferService(pool)
 
 	// Handlers
-	authHandler := handler.NewAuthHandler(userService, emailService, jwtService, refreshService)
+	authHandler := handler.NewAuthHandler(userService, emailService, jwtService, refreshService, accountService)
 	categoryHandler := handler.NewCategoryHandler(categoryService)
-	transactionHandler := handler.NewTransactionHandler(transactionService)
+	transactionHandler := handler.NewTransactionHandler(transactionService, accountService)
 	summaryHandler := handler.NewSummaryHandler(summaryService)
+	accountHandler := handler.NewAccountHandler(accountService)
+	transferHandler := handler.NewTransferHandler(transferService)
 
 	// Router
 	r := chi.NewRouter()
@@ -82,6 +86,17 @@ func main() {
 
 		// Logout
 		r.Post("/auth/logout", authHandler.Logout)
+
+		// Cuentas
+		r.Get("/accounts", accountHandler.List)
+		r.Post("/accounts", accountHandler.Create)
+		r.Put("/accounts/{id}", accountHandler.Update)
+		r.Delete("/accounts/{id}", accountHandler.Delete)
+
+		// Transferencias
+		r.Get("/transfers", transferHandler.List)
+		r.Post("/transfers", transferHandler.Create)
+		r.Delete("/transfers/{id}", transferHandler.Delete)
 
 		// Categorías
 		r.Get("/categories", categoryHandler.List)

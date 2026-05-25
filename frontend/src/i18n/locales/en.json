@@ -22,6 +22,7 @@
     "nav": {
         "dashboard": "Dashboard",
         "transactions": "Transactions",
+        "accounts": "Accounts",
         "categories": "Categories"
     },
     "login": {
@@ -112,22 +113,6 @@
         "errorLoading": "Error loading summary. Please try again.",
         "byCategory": "By category"
     },
-    "transactions": {
-        "title": "Transactions",
-        "recordsThisMonth": "{{count}} records this month",
-        "new": "New",
-        "editTitle": "Edit transaction",
-        "newTitle": "New transaction",
-        "deleteTitle": "Delete transaction?",
-        "deleteDescription": "This action cannot be undone. The transaction will be permanently deleted.",
-        "deleteConfirm": "Delete",
-        "deleting": "Deleting...",
-        "empty": "No transactions this month.",
-        "createFirst": "Create the first one",
-        "created": "Transaction created",
-        "updated": "Transaction updated",
-        "deleted": "Transaction deleted"
-    },
     "categories": {
         "title": "Categories",
         "createdCount": "{{count}} categories created",
@@ -148,23 +133,6 @@
     "navUser": {
         "logout": "Sign out",
         "loggedOut": "Signed out successfully"
-    },
-    "transactionForm": {
-        "type": "Type",
-        "expense": "💸 Expense",
-        "income": "💵 Income",
-        "amount": "Amount (USD)",
-        "amountPlaceholder": "0.00",
-        "category": "Category",
-        "noCategory": "No category",
-        "searchCategory": "Search category...",
-        "description": "Description",
-        "descriptionPlaceholder": "Optional description",
-        "date": "Date",
-        "cancel": "Cancel",
-        "saving": "Saving...",
-        "saveChanges": "Save changes",
-        "create": "Create"
     },
     "categoryForm": {
         "name": "Name",
@@ -240,6 +208,121 @@
         "colorRequired": "Select a color",
         "amountInvalid": "Enter a valid amount",
         "amountPositive": "Amount must be greater than 0",
-        "dateRequired": "Date is required"
+        "dateRequired": "Date is required",
+        "currencyRequired": "Select a currency",
+        "balanceMin": "Balance cannot be negative",
+        "accountRequired": "Select an account",
+        "feeMin": "Fee cannot be negative"
+    },
+    "transactions": {
+        "title": "Transactions",
+        "tabLabel": "Transactions",
+        "recordsThisMonth": "{{count}} records this period",
+        "new": "New",
+        "editTitle": "Edit transaction",
+        "newTitle": "New transaction",
+        "deleteTitle": "Delete transaction?",
+        "deleteDescription": "This action cannot be undone. The transaction will be permanently deleted.",
+        "deleteConfirm": "Delete",
+        "deleting": "Deleting...",
+        "empty": "No transactions this period.",
+        "createFirst": "Create the first one",
+        "created": "Transaction created",
+        "updated": "Transaction updated",
+        "deleted": "Transaction deleted"
+    },
+    "accounts": {
+        "title": "Accounts",
+        "createdCount": "{{count}} accounts",
+        "new": "New account",
+        "editTitle": "Edit account",
+        "newTitle": "New account",
+        "deleteTitle": "Delete account?",
+        "deleteDescription": "This action cannot be undone. The account and all its data will be permanently deleted.",
+        "deleteConfirm": "Delete",
+        "deleting": "Deleting...",
+        "empty": "No accounts yet.",
+        "createFirst": "Create the first one",
+        "created": "Account created",
+        "updated": "Account updated",
+        "deleted": "Account deleted"
+    },
+    "accountForm": {
+        "name": "Name",
+        "namePlaceholder": "E.g. Checking account",
+        "balance": "Initial balance",
+        "balanceEdit": "Balance",
+        "currency": "Currency",
+        "currencyLocked": "Cannot be changed",
+        "icon": "Icon",
+        "color": "Color",
+        "excludeFromStats": "Exclude from statistics",
+        "excludeFromStatsHint": "Transactions in this account won't affect the summary.",
+        "cancel": "Cancel",
+        "saving": "Saving...",
+        "saveChanges": "Save changes",
+        "create": "Create account"
+    },
+    "accountCard": {
+        "excluded": "Excluded"
+    },
+    "transfers": {
+        "tabLabel": "Transfers",
+        "recordsThisPeriod": "{{count}} transfers this period",
+        "new": "New transfer",
+        "newTitle": "New transfer",
+        "deleteTitle": "Delete transfer?",
+        "deleteDescription": "This action cannot be undone. The transfer will be permanently deleted and account balances will be reversed.",
+        "deleteConfirm": "Delete",
+        "deleting": "Deleting...",
+        "empty": "No transfers this period.",
+        "createFirst": "Create the first one",
+        "needTwoAccounts": "You need at least 2 accounts to make a transfer.",
+        "created": "Transfer created",
+        "deleted": "Transfer deleted"
+    },
+    "transferForm": {
+        "fromAccount": "From account",
+        "toAccount": "To account",
+        "selectAccount": "Select account",
+        "amount": "Amount",
+        "fee": "Fee",
+        "description": "Description",
+        "descriptionPlaceholder": "Optional description",
+        "date": "Date",
+        "cancel": "Cancel",
+        "saving": "Saving...",
+        "create": "Transfer"
+    },
+    "transferItem": {
+        "fee": "Fee:"
+    },
+    "transactionForm": {
+        "type": "Type",
+        "expense": "💸 Expense",
+        "income": "💵 Income",
+        "amount": "Amount (USD)",
+        "amountPlaceholder": "0.00",
+        "account": "Account",
+        "noAccount": "No account",
+        "category": "Category",
+        "noCategory": "No category",
+        "searchCategory": "Search category...",
+        "description": "Description",
+        "descriptionPlaceholder": "Optional description",
+        "date": "Date",
+        "cancel": "Cancel",
+        "saving": "Saving...",
+        "saveChanges": "Save changes",
+        "create": "Create"
+    },
+    "filters": {
+        "all": "All types",
+        "expenses": "Expenses",
+        "incomes": "Income",
+        "allAccounts": "All accounts",
+        "allCategories": "All categories",
+        "newest": "Newest first",
+        "oldest": "Oldest first"
     }
 }

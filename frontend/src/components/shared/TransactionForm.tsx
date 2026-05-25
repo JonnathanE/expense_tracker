@@ -27,6 +27,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import { useAccounts } from "@/hooks/useAccounts";
 import { useCategories } from "@/hooks/useCategories";
 import { createSchemas, type TransactionFormData } from "@/lib/schemas";
 import type { Category, Transaction } from "@/types";
@@ -123,6 +124,7 @@ export function TransactionForm({
     const { t } = useTranslation();
     const { transactionSchema } = createSchemas(t);
     const { data: categories = [] } = useCategories();
+    const { data: accounts = [] } = useAccounts();
 
     const {
         register,
@@ -134,6 +136,7 @@ export function TransactionForm({
         resolver: zodResolver(transactionSchema),
         defaultValues: defaultValues
             ? {
+                  account_id: defaultValues.account_id,
                   category_id: defaultValues.category_id,
                   amount: defaultValues.amount,
                   type: defaultValues.type,
@@ -141,9 +144,10 @@ export function TransactionForm({
                   date: defaultValues.date.slice(0, 10),
               }
             : {
+                  account_id: null,
                   type: "expense",
                   description: "",
-                  date: new Date().toISOString().slice(0, 10),
+                  date: new Date().toLocaleDateString("en-CA"),
                   category_id: null,
               },
     });
@@ -198,6 +202,48 @@ export function TransactionForm({
                     </p>
                 )}
             </div>
+
+            {/* Cuenta */}
+            {accounts.length > 0 && (
+                <div className="space-y-2">
+                    <Label>
+                        {t("transactionForm.account")}{" "}
+                        <span className="text-muted-foreground text-xs">
+                            ({t("common.optional")})
+                        </span>
+                    </Label>
+                    <Controller
+                        control={control}
+                        name="account_id"
+                        render={({ field }) => (
+                            <Select
+                                onValueChange={(v) =>
+                                    field.onChange(v === "__none__" ? null : v)
+                                }
+                                value={field.value ?? "__none__"}
+                            >
+                                <SelectTrigger className="w-full">
+                                    <SelectValue
+                                        placeholder={t(
+                                            "transactionForm.noAccount",
+                                        )}
+                                    />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="__none__">
+                                        {t("transactionForm.noAccount")}
+                                    </SelectItem>
+                                    {accounts.map((a) => (
+                                        <SelectItem key={a.id} value={a.id}>
+                                            {a.name}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        )}
+                    />
+                </div>
+            )}
 
             {/* Categoría */}
             <div className="space-y-2">

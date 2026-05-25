@@ -2,6 +2,7 @@ import type { Transaction } from "@/types";
 import { api } from "./client";
 
 export interface CreateTransactionData {
+    account_id: string | null;
     category_id: string | null;
     amount: number;
     type: "income" | "expense";
@@ -10,8 +11,12 @@ export interface CreateTransactionData {
 }
 
 export interface TransactionFilters {
-    month?: string;
+    date_from?: string;
+    date_to?: string;
     type?: "income" | "expense";
+    account_id?: string;
+    category_id?: string;
+    sort?: "asc" | "desc";
 }
 
 export const transactionsApi = {

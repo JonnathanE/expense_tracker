@@ -15,8 +15,14 @@ const formatCurrency = (amount: number) =>
         currency: "USD",
     }).format(amount);
 
+/** Parsea YYYY-MM-DD (o ISO con hora) como fecha local, evitando el offset UTC. */
+const parseLocalDate = (dateStr: string) => {
+    const [year, month, day] = dateStr.slice(0, 10).split("-").map(Number);
+    return new Date(year, month - 1, day);
+};
+
 const formatDate = (dateStr: string) =>
-    new Date(dateStr).toLocaleDateString("es-EC", {
+    parseLocalDate(dateStr).toLocaleDateString("es-EC", {
         day: "2-digit",
         month: "short",
     });

@@ -6,10 +6,39 @@ import {
 import { useFilterStore } from "@/store/filterStore";
 
 export function useTransactions() {
+    const getDateRange = useFilterStore((s) => s.getDateRange);
+    const periodType = useFilterStore((s) => s.periodType);
     const selectedMonth = useFilterStore((s) => s.selectedMonth);
+    const customFrom = useFilterStore((s) => s.customFrom);
+    const customTo = useFilterStore((s) => s.customTo);
+    const filterType = useFilterStore((s) => s.filterType);
+    const filterAccountId = useFilterStore((s) => s.filterAccountId);
+    const filterCategoryId = useFilterStore((s) => s.filterCategoryId);
+    const sortOrder = useFilterStore((s) => s.sortOrder);
+
     return useQuery({
-        queryKey: ["transactions", selectedMonth],
-        queryFn: () => transactionsApi.list({ month: selectedMonth }),
+        queryKey: [
+            "transactions",
+            periodType,
+            selectedMonth,
+            customFrom,
+            customTo,
+            filterType,
+            filterAccountId,
+            filterCategoryId,
+            sortOrder,
+        ],
+        queryFn: () => {
+            const { dateFrom, dateTo } = getDateRange();
+            return transactionsApi.list({
+                date_from: dateFrom,
+                date_to: dateTo,
+                type: filterType === "all" ? undefined : filterType,
+                account_id: filterAccountId || undefined,
+                category_id: filterCategoryId || undefined,
+                sort: sortOrder,
+            });
+        },
     });
 }
 
@@ -21,6 +50,7 @@ export function useCreateTransaction() {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["transactions"] });
             queryClient.invalidateQueries({ queryKey: ["summary"] });
+            queryClient.invalidateQueries({ queryKey: ["accounts"] });
         },
     });
 }
@@ -38,6 +68,7 @@ export function useUpdateTransaction() {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["transactions"] });
             queryClient.invalidateQueries({ queryKey: ["summary"] });
+            queryClient.invalidateQueries({ queryKey: ["accounts"] });
         },
     });
 }
@@ -49,6 +80,7 @@ export function useDeleteTransaction() {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["transactions"] });
             queryClient.invalidateQueries({ queryKey: ["summary"] });
+            queryClient.invalidateQueries({ queryKey: ["accounts"] });
         },
     });
 }

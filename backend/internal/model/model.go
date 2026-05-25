@@ -14,6 +14,19 @@ type User struct {
 	UpdatedAt              time.Time  `json:"updated_at"`
 }
 
+type Account struct {
+	ID               string    `json:"id"`
+	UserID           string    `json:"user_id"`
+	Name             string    `json:"name"`
+	Icon             string    `json:"icon"`
+	Color            string    `json:"color"`
+	Balance          float64   `json:"balance"`
+	Currency         string    `json:"currency"`
+	ExcludeFromStats bool      `json:"exclude_from_stats"`
+	CreatedAt        time.Time `json:"created_at"`
+	UpdatedAt        time.Time `json:"updated_at"`
+}
+
 type Category struct {
 	ID        string    `json:"id"`
 	UserID    string    `json:"user_id"`
@@ -27,6 +40,8 @@ type Category struct {
 type Transaction struct {
 	ID           string    `json:"id"`
 	UserID       string    `json:"user_id"`
+	AccountID    *string   `json:"account_id"`
+	AccountName  *string   `json:"account_name,omitempty"`
 	CategoryID   *string   `json:"category_id"`
 	CategoryName *string   `json:"category_name,omitempty"`
 	Amount       float64   `json:"amount"`
@@ -35,6 +50,21 @@ type Transaction struct {
 	Date         time.Time `json:"date"`
 	CreatedAt    time.Time `json:"created_at"`
 	UpdatedAt    time.Time `json:"updated_at"`
+}
+
+type Transfer struct {
+	ID               string    `json:"id"`
+	UserID           string    `json:"user_id"`
+	FromAccountID    string    `json:"from_account_id"`
+	ToAccountID      string    `json:"to_account_id"`
+	FromAccountName  *string   `json:"from_account_name,omitempty"`
+	ToAccountName    *string   `json:"to_account_name,omitempty"`
+	Amount           float64   `json:"amount"`
+	Fee              float64   `json:"fee"`
+	FeeTransactionID *string   `json:"fee_transaction_id"`
+	Description      *string   `json:"description"`
+	Date             time.Time `json:"date"`
+	CreatedAt        time.Time `json:"created_at"`
 }
 
 type Budget struct {
