@@ -113,7 +113,10 @@
         "title": "Dashboard",
         "subtitle": "Your financial summary",
         "errorLoading": "Error loading summary. Please try again.",
-        "byCategory": "By category"
+        "byCategory": "By category",
+        "balanceChart": "Cumulative balance",
+        "balanceChartSubtitle": "Daily balance evolution for the selected period",
+        "noChartData": "No transactions in this period"
     },
     "categories": {
         "title": "Categories",

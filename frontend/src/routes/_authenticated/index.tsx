@@ -1,8 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { CategoryBreakdown } from "@/components/shared/CategoryBreakdown";
+import { DailyBalanceChart } from "@/components/shared/DailyBalanceChart";
 import { MonthPicker } from "@/components/shared/MonthPicker";
 import { SummaryCards } from "@/components/shared/SummaryCards";
+import { useDailySummary } from "@/hooks/useDailySummary";
 import { useSummary } from "@/hooks/useSummary";
 import { APP_NAME_SHORT } from "@/lib/constants";
 
@@ -15,6 +17,7 @@ export const Route = createFileRoute("/_authenticated/")({
 
 function DashboardPage() {
     const { data: summary, isLoading, isError } = useSummary();
+    const { data: dailyData, isLoading: isDailyLoading } = useDailySummary();
     const { t } = useTranslation();
 
     return (
@@ -61,6 +64,11 @@ function DashboardPage() {
             {summary && (
                 <>
                     <SummaryCards summary={summary} />
+
+                    <DailyBalanceChart
+                        data={dailyData ?? []}
+                        isLoading={isDailyLoading}
+                    />
 
                     <div className="space-y-4">
                         <h2 className="text-lg font-semibold text-foreground">

@@ -93,3 +93,8 @@ type CategorySummary struct {
 	Total        float64 `json:"total"`
 	TxCount      int     `json:"tx_count"` // cuántas transacciones tiene
 }
+
+type DailySummary struct {
+	Date    string  `json:"date"`    // YYYY-MM-DD
+	Balance float64 `json:"balance"` // balance acumulado hasta este día
+}

@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 
@@ -107,4 +108,49 @@ func (s *SummaryService) Get(ctx context.Context, userID, dateFrom, dateTo strin
 	}
 
 	return summary, nil
+}
+
+// GetDaily calcula el balance acumulado por día para el rango [dateFrom, dateTo].
+// Solo incluye transacciones cuya cuenta tenga exclude_from_stats = FALSE
+// (o que no tengan cuenta asignada).
+func (s *SummaryService) GetDaily(ctx context.Context, userID, dateFrom, dateTo string) ([]model.DailySummary, error) {
+	rows, err := s.db.Query(ctx,
+		`SELECT
+		     t.date::date AS day,
+		     SUM(CASE WHEN t.type = 'income' THEN t.amount ELSE -t.amount END) AS daily_net
+		 FROM transactions t
+		 LEFT JOIN accounts a ON a.id = t.account_id
+		 WHERE t.user_id = $1
+		   AND t.date BETWEEN $2 AND $3
+		   AND (t.account_id IS NULL OR a.exclude_from_stats = FALSE)
+		 GROUP BY t.date::date
+		 ORDER BY day ASC`,
+		userID, dateFrom, dateTo,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error calculando daily summary: %w", err)
+	}
+	defer rows.Close()
+
+	// Acumular el balance día a día
+	var results []model.DailySummary
+	var cumulative float64
+	for rows.Next() {
+		var day time.Time
+		var dailyNet float64
+		if err := rows.Scan(&day, &dailyNet); err != nil {
+			return nil, fmt.Errorf("error leyendo daily summary: %w", err)
+		}
+		cumulative += dailyNet
+		results = append(results, model.DailySummary{
+			Date:    day.Format("2006-01-02"),
+			Balance: cumulative,
+		})
+	}
+
+	if results == nil {
+		results = []model.DailySummary{}
+	}
+
+	return results, nil
 }

@@ -130,6 +130,7 @@ func main() {
 
 		// Summary
 		r.Get("/summary", summaryHandler.Get)
+		r.Get("/summary/daily", summaryHandler.GetDaily)
 	})
 
 	log.Printf("🚀 Servidor corriendo en http://localhost:%s", cfg.Port)

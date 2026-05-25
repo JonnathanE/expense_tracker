@@ -31,8 +31,10 @@ export function useCreateTransfer() {
         mutationFn: (data: CreateTransferData) => transfersApi.create(data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["transfers"] });
+            queryClient.invalidateQueries({ queryKey: ["transactions"] });
             queryClient.invalidateQueries({ queryKey: ["accounts"] });
             queryClient.invalidateQueries({ queryKey: ["summary"] });
+            queryClient.invalidateQueries({ queryKey: ["summary-daily"] });
         },
         onError: (err) => handleApiError(err, "create"),
     });
@@ -44,8 +46,10 @@ export function useDeleteTransfer() {
         mutationFn: (id: string) => transfersApi.delete(id),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["transfers"] });
+            queryClient.invalidateQueries({ queryKey: ["transactions"] });
             queryClient.invalidateQueries({ queryKey: ["accounts"] });
             queryClient.invalidateQueries({ queryKey: ["summary"] });
+            queryClient.invalidateQueries({ queryKey: ["summary-daily"] });
         },
         onError: (err) => handleApiError(err, "delete"),
     });

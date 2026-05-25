@@ -81,3 +81,8 @@ export interface Summary {
     balance: number;
     by_category: CategorySummary[];
 }
+
+export interface DailySummary {
+    date: string;    // YYYY-MM-DD
+    balance: number; // balance acumulado hasta ese día
+}

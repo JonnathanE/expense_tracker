@@ -113,7 +113,10 @@
         "title": "Dashboard",
         "subtitle": "Resumen de tus finanzas",
         "errorLoading": "Error cargando el resumen. Intenta de nuevo.",
-        "byCategory": "Por categoría"
+        "byCategory": "Por categoría",
+        "balanceChart": "Balance acumulado",
+        "balanceChartSubtitle": "Evolución diaria del balance en el período seleccionado",
+        "noChartData": "Sin transacciones en este período"
     },
     "categories": {
         "title": "Categorías",

@@ -163,3 +163,8 @@ type categorySummaryResponse struct {
 	Total        float64 `json:"total" example:"350.00"`
 	TxCount      int     `json:"tx_count" example:"12"`
 }
+
+type dailySummaryResponse struct {
+	Date    string  `json:"date" example:"2025-05-01"`
+	Balance float64 `json:"balance" example:"250.00"`
+}

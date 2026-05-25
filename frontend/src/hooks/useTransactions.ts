@@ -51,6 +51,7 @@ export function useCreateTransaction() {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["transactions"] });
             queryClient.invalidateQueries({ queryKey: ["summary"] });
+            queryClient.invalidateQueries({ queryKey: ["summary-daily"] });
             queryClient.invalidateQueries({ queryKey: ["accounts"] });
         },
         onError: (err) => handleApiError(err, "create"),
@@ -70,6 +71,7 @@ export function useUpdateTransaction() {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["transactions"] });
             queryClient.invalidateQueries({ queryKey: ["summary"] });
+            queryClient.invalidateQueries({ queryKey: ["summary-daily"] });
             queryClient.invalidateQueries({ queryKey: ["accounts"] });
         },
         onError: (err) => handleApiError(err, "update"),
@@ -83,6 +85,7 @@ export function useDeleteTransaction() {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["transactions"] });
             queryClient.invalidateQueries({ queryKey: ["summary"] });
+            queryClient.invalidateQueries({ queryKey: ["summary-daily"] });
             queryClient.invalidateQueries({ queryKey: ["accounts"] });
         },
         onError: (err) => handleApiError(err, "delete"),
