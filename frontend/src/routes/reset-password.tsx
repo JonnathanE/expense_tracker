@@ -1,7 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import axios from "axios";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -20,6 +19,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { getApiErrorMessage, handleApiError } from "@/lib/apiError";
 import { APP_NAME } from "@/lib/constants";
 import { createSchemas, type ResetPasswordFormData } from "@/lib/schemas";
 
@@ -51,6 +51,7 @@ function ResetPasswordPage() {
             toast.success(t("resetPassword.success"));
             navigate({ to: "/login" });
         },
+        onError: (err) => handleApiError(err, "auth"),
     });
 
     const onSubmit = (data: ResetPasswordFormData) => mutation.mutate(data);
@@ -120,11 +121,10 @@ function ResetPasswordPage() {
                                 {mutation.isError && (
                                     <Alert variant="destructive">
                                         <AlertDescription>
-                                            {axios.isAxiosError(mutation.error)
-                                                ? (mutation.error.response?.data
-                                                      ?.error ??
-                                                  t("resetPassword.error"))
-                                                : t("resetPassword.error")}
+                                            {getApiErrorMessage(
+                                                mutation.error,
+                                                "auth",
+                                            )}
                                         </AlertDescription>
                                     </Alert>
                                 )}

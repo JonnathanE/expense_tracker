@@ -26,7 +26,7 @@ func (s *CategoryService) List(ctx context.Context, userID string) ([]model.Cate
 		userID,
 	)
 	if err != nil {
-		return nil, fmt.Errorf("error consultando categorías: %w", err)
+		return nil, fmt.Errorf("fetch_failed")
 	}
 	defer rows.Close()
 
@@ -34,7 +34,7 @@ func (s *CategoryService) List(ctx context.Context, userID string) ([]model.Cate
 	for rows.Next() {
 		var c model.Category
 		if err := rows.Scan(&c.ID, &c.UserID, &c.Name, &c.Type, &c.Icon, &c.Color, &c.CreatedAt); err != nil {
-			return nil, fmt.Errorf("error leyendo categoría: %w", err)
+			return nil, fmt.Errorf("fetch_failed")
 		}
 		categories = append(categories, c)
 	}
@@ -48,7 +48,7 @@ func (s *CategoryService) List(ctx context.Context, userID string) ([]model.Cate
 
 func (s *CategoryService) Create(ctx context.Context, userID, name, catType, icon, color string) (*model.Category, error) {
 	if catType != "income" && catType != "expense" {
-		return nil, fmt.Errorf("tipo debe ser 'income' o 'expense'")
+		return nil, fmt.Errorf("invalid_type")
 	}
 
 	var c model.Category
@@ -60,7 +60,7 @@ func (s *CategoryService) Create(ctx context.Context, userID, name, catType, ico
 	).Scan(&c.ID, &c.UserID, &c.Name, &c.Type, &c.Icon, &c.Color, &c.CreatedAt)
 
 	if err != nil {
-		return nil, fmt.Errorf("error creando categoría: %w", err)
+		return nil, fmt.Errorf("create_failed")
 	}
 
 	return &c, nil
@@ -77,7 +77,7 @@ func (s *CategoryService) Update(ctx context.Context, id, userID, name, icon, co
 	).Scan(&c.ID, &c.UserID, &c.Name, &c.Type, &c.Icon, &c.Color, &c.CreatedAt)
 
 	if err != nil {
-		return nil, fmt.Errorf("categoría no encontrada")
+		return nil, fmt.Errorf("category_not_found")
 	}
 
 	return &c, nil
@@ -89,7 +89,7 @@ func (s *CategoryService) Delete(ctx context.Context, id, userID string) error {
 		id, userID,
 	)
 	if err != nil || result.RowsAffected() == 0 {
-		return fmt.Errorf("categoría no encontrada")
+		return fmt.Errorf("category_not_found")
 	}
 	return nil
 }

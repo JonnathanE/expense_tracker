@@ -117,15 +117,15 @@ func (s *TransactionService) Create(
 	accountService *AccountService,
 ) (*model.Transaction, error) {
 	if txType != "income" && txType != "expense" {
-		return nil, fmt.Errorf("tipo debe ser 'income' o 'expense'")
+		return nil, fmt.Errorf("invalid_type")
 	}
 	if amount <= 0 {
-		return nil, fmt.Errorf("el monto debe ser mayor a 0")
+		return nil, fmt.Errorf("amount_invalid")
 	}
 
 	parsedDate, err := time.Parse("2006-01-02", date)
 	if err != nil {
-		return nil, fmt.Errorf("fecha inválida, usa formato YYYY-MM-DD")
+		return nil, fmt.Errorf("invalid_date_format")
 	}
 
 	var t model.Transaction
@@ -142,7 +142,7 @@ func (s *TransactionService) Create(
 		&t.CreatedAt, &t.UpdatedAt,
 	)
 	if err != nil {
-		return nil, fmt.Errorf("error creando transacción: %w", err)
+		return nil, fmt.Errorf("create_failed")
 	}
 
 	// Actualizar saldo de la cuenta
@@ -164,7 +164,7 @@ func (s *TransactionService) Update(
 ) (*model.Transaction, error) {
 	parsedDate, err := time.Parse("2006-01-02", date)
 	if err != nil {
-		return nil, fmt.Errorf("fecha inválida, usa formato YYYY-MM-DD")
+		return nil, fmt.Errorf("invalid_date_format")
 	}
 
 	// 1. Obtener datos actuales antes de modificar
@@ -206,7 +206,7 @@ func (s *TransactionService) Update(
 		if oldAccountID != nil {
 			accountService.UpdateBalance(ctx, *oldAccountID, oldAmount, oldType, "add")
 		}
-		return nil, fmt.Errorf("error actualizando transacción")
+		return nil, fmt.Errorf("update_failed")
 	}
 
 	// 4. Aplicar el saldo en la cuenta nueva

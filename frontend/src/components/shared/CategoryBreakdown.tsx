@@ -77,8 +77,8 @@ function CategoryList({
                         >
                             <div className="flex items-center gap-3">
                                 <CategoryIcon
-                                    icon={cat.icon}
-                                    color={cat.color}
+                                    icon={cat.icon ?? ""}
+                                    color={cat.color ?? ""}
                                 />
                                 <div>
                                     <p className="text-sm font-medium text-foreground">

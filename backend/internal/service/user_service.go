@@ -21,39 +21,34 @@ func NewUserService(db *pgxpool.Pool) *UserService {
 	return &UserService{db: db}
 }
 
-// Register crea un usuario nuevo inactivo y devuelve el token de activación
 func (s *UserService) Register(
 	ctx context.Context,
 	name, email, password string,
 	accountService *AccountService,
 ) (*model.User, string, error) {
-	// 1. Verificar si el email ya existe
 	var exists bool
 	err := s.db.QueryRow(ctx,
 		`SELECT EXISTS(SELECT 1 FROM users WHERE email = $1)`, email,
 	).Scan(&exists)
 	if err != nil {
-		return nil, "", fmt.Errorf("error verificando email: %w", err)
+		return nil, "", fmt.Errorf("server_error")
 	}
 	if exists {
-		return nil, "", fmt.Errorf("el email ya está registrado")
+		return nil, "", fmt.Errorf("email_already_registered")
 	}
 
-	// 2. Hashear contraseña
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
-		return nil, "", fmt.Errorf("error procesando contraseña: %w", err)
+		return nil, "", fmt.Errorf("server_error")
 	}
 
-	// 3. Generar token de activación (32 bytes aleatorios en hex = 64 caracteres)
 	tokenBytes := make([]byte, 32)
 	if _, err := rand.Read(tokenBytes); err != nil {
-		return nil, "", fmt.Errorf("error generando token: %w", err)
+		return nil, "", fmt.Errorf("server_error")
 	}
 	activationToken := hex.EncodeToString(tokenBytes)
 	tokenExpires := time.Now().Add(24 * time.Hour)
 
-	// 4. Insertar usuario en la DB
 	var user model.User
 	err = s.db.QueryRow(ctx,
 		`INSERT INTO users (name, email, password, activation_token, activation_token_expires)
@@ -65,22 +60,18 @@ func (s *UserService) Register(
 		&user.IsActive, &user.CreatedAt, &user.UpdatedAt,
 	)
 	if err != nil {
-		return nil, "", fmt.Errorf("error creando usuario: %w", err)
+		return nil, "", fmt.Errorf("create_failed")
 	}
 
-	// 5. Crear cuenta Cash por defecto
-	currency := "USD" // o leerlo de la config
+	currency := "USD"
 	if err := accountService.CreateDefault(ctx, user.ID, currency); err != nil {
-		// Log pero no falla el registro
 		fmt.Printf("⚠️  Error creando cuenta por defecto: %v\n", err)
 	}
 
 	return &user, activationToken, nil
 }
 
-// Activate verifica el token y activa el usuario
 func (s *UserService) Activate(ctx context.Context, token string) error {
-	// Buscar usuario con ese token
 	var userID string
 	var expires time.Time
 	var isActive bool
@@ -93,19 +84,17 @@ func (s *UserService) Activate(ctx context.Context, token string) error {
 	).Scan(&userID, &expires, &isActive)
 
 	if err != nil {
-		return fmt.Errorf("token inválido")
+		return fmt.Errorf("token_invalid")
 	}
 
 	if isActive {
-		return fmt.Errorf("la cuenta ya está activa")
+		return fmt.Errorf("account_already_active")
 	}
 
-	// Verificar que no haya expirado
 	if time.Now().After(expires) {
-		return fmt.Errorf("el token ha expirado")
+		return fmt.Errorf("token_expired")
 	}
 
-	// Activar usuario y limpiar el token
 	_, err = s.db.Exec(ctx,
 		`UPDATE users
 		 SET is_active = TRUE,
@@ -116,7 +105,7 @@ func (s *UserService) Activate(ctx context.Context, token string) error {
 		userID,
 	)
 	if err != nil {
-		return fmt.Errorf("error activando usuario: %w", err)
+		return fmt.Errorf("server_error")
 	}
 
 	return nil
@@ -128,7 +117,6 @@ type LoginResult struct {
 	RefreshToken string
 }
 
-// Login verifica credenciales y retorna el usuario + JWT
 func (s *UserService) Login(
 	ctx context.Context,
 	email, password string,
@@ -147,27 +135,25 @@ func (s *UserService) Login(
 		&user.IsActive, &user.CreatedAt, &user.UpdatedAt,
 	)
 	if err != nil {
-		return nil, fmt.Errorf("credenciales inválidas")
+		return nil, fmt.Errorf("invalid_credentials")
 	}
 
 	if !user.IsActive {
-		return nil, fmt.Errorf("cuenta no activada, revisa tu email")
+		return nil, fmt.Errorf("account_not_activated")
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password)); err != nil {
-		return nil, fmt.Errorf("credenciales inválidas")
+		return nil, fmt.Errorf("invalid_credentials")
 	}
 
-	// Generar access token
 	accessToken, err := jwtService.Generate(user.ID)
 	if err != nil {
-		return nil, fmt.Errorf("error generando sesión: %w", err)
+		return nil, fmt.Errorf("server_error")
 	}
 
-	// Generar refresh token
 	refreshToken, err := refreshService.Generate(ctx, user.ID)
 	if err != nil {
-		return nil, fmt.Errorf("error generando sesión: %w", err)
+		return nil, fmt.Errorf("server_error")
 	}
 
 	return &LoginResult{
@@ -177,7 +163,6 @@ func (s *UserService) Login(
 	}, nil
 }
 
-// ForgotPassword genera un token de reset y lo guarda en la DB
 func (s *UserService) ForgotPassword(ctx context.Context, email string) (*model.User, string, error) {
 	var user model.User
 	err := s.db.QueryRow(ctx,
@@ -186,11 +171,9 @@ func (s *UserService) ForgotPassword(ctx context.Context, email string) (*model.
 	).Scan(&user.ID, &user.Name, &user.Email)
 
 	if err != nil {
-		// No revelamos si el email existe o no por seguridad
 		return nil, "", nil
 	}
 
-	// Generar token
 	tokenBytes := make([]byte, 32)
 	rand.Read(tokenBytes)
 	resetToken := hex.EncodeToString(tokenBytes)
@@ -203,13 +186,12 @@ func (s *UserService) ForgotPassword(ctx context.Context, email string) (*model.
 		resetToken, tokenExpires, user.ID,
 	)
 	if err != nil {
-		return nil, "", fmt.Errorf("error generando token: %w", err)
+		return nil, "", fmt.Errorf("server_error")
 	}
 
 	return &user, resetToken, nil
 }
 
-// ResetPassword verifica el token y actualiza la contraseña
 func (s *UserService) ResetPassword(ctx context.Context, token, newPassword string) error {
 	var userID string
 	var expires time.Time
@@ -220,20 +202,20 @@ func (s *UserService) ResetPassword(ctx context.Context, token, newPassword stri
 	).Scan(&userID, &expires)
 
 	if err != nil {
-		return fmt.Errorf("token inválido")
+		return fmt.Errorf("token_invalid")
 	}
 
 	if time.Now().After(expires) {
-		return fmt.Errorf("el token ha expirado")
+		return fmt.Errorf("token_expired")
 	}
 
 	if len(newPassword) < 6 {
-		return fmt.Errorf("la contraseña debe tener al menos 6 caracteres")
+		return fmt.Errorf("password_too_short")
 	}
 
 	hash, err := bcrypt.GenerateFromPassword([]byte(newPassword), bcrypt.DefaultCost)
 	if err != nil {
-		return fmt.Errorf("error procesando contraseña: %w", err)
+		return fmt.Errorf("server_error")
 	}
 
 	_, err = s.db.Exec(ctx,

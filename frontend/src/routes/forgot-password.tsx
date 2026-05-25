@@ -1,7 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import axios from "axios";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { authApi } from "@/api/auth";
@@ -19,6 +18,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { getApiErrorMessage } from "@/lib/apiError";
 import { APP_NAME } from "@/lib/constants";
 import { createSchemas, type ForgotPasswordFormData } from "@/lib/schemas";
 
@@ -93,13 +93,10 @@ function ForgotPasswordPage() {
                                     {mutation.isError && (
                                         <Alert variant="destructive">
                                             <AlertDescription>
-                                                {axios.isAxiosError(
+                                                {getApiErrorMessage(
                                                     mutation.error,
-                                                )
-                                                    ? (mutation.error.response
-                                                          ?.data?.error ??
-                                                      t("forgotPassword.error"))
-                                                    : t("forgotPassword.error")}
+                                                    "auth",
+                                                )}
                                             </AlertDescription>
                                         </Alert>
                                     )}

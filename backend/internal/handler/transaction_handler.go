@@ -3,7 +3,6 @@ package handler
 import (
 	"encoding/json"
 	"net/http"
-	"strings"
 
 	"github.com/go-chi/chi/v5"
 
@@ -23,7 +22,7 @@ func NewTransactionHandler(
 	return &TransactionHandler{transactionService: transactionService, accountService: accountService}
 }
 
-// ── GET /transactions?date_from=2025-05-01&date_to=2025-05-31&type=expense&account_id=...&category_id=...&sort=asc ──
+// ── GET /transactions ─────────────────────────────────────────────────────────
 
 func (h *TransactionHandler) List(w http.ResponseWriter, r *http.Request) {
 	userID := middleware.GetUserID(r)
@@ -39,7 +38,7 @@ func (h *TransactionHandler) List(w http.ResponseWriter, r *http.Request) {
 
 	transactions, err := h.transactionService.List(r.Context(), userID, filters)
 	if err != nil {
-		respondError(w, http.StatusInternalServerError, "error obteniendo transacciones")
+		respondError(w, http.StatusInternalServerError, "fetch_failed")
 		return
 	}
 
@@ -62,12 +61,12 @@ func (h *TransactionHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 	var req transactionRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		respondError(w, http.StatusBadRequest, "datos inválidos")
+		respondError(w, http.StatusBadRequest, "invalid_request")
 		return
 	}
 
 	if req.Date == "" {
-		respondError(w, http.StatusBadRequest, "la fecha es requerida")
+		respondError(w, http.StatusBadRequest, "date_required")
 		return
 	}
 
@@ -77,13 +76,16 @@ func (h *TransactionHandler) Create(w http.ResponseWriter, r *http.Request) {
 		h.accountService,
 	)
 	if err != nil {
-		if strings.Contains(err.Error(), "tipo debe ser") ||
-			strings.Contains(err.Error(), "monto") ||
-			strings.Contains(err.Error(), "fecha") {
-			respondError(w, http.StatusBadRequest, err.Error())
-			return
+		switch err.Error() {
+		case "invalid_type":
+			respondError(w, http.StatusBadRequest, "invalid_type")
+		case "amount_invalid":
+			respondError(w, http.StatusBadRequest, "amount_invalid")
+		case "invalid_date_format":
+			respondError(w, http.StatusBadRequest, "invalid_date_format")
+		default:
+			respondError(w, http.StatusInternalServerError, "create_failed")
 		}
-		respondError(w, http.StatusInternalServerError, "error creando transacción")
 		return
 	}
 
@@ -98,7 +100,7 @@ func (h *TransactionHandler) Update(w http.ResponseWriter, r *http.Request) {
 
 	var req transactionRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		respondError(w, http.StatusBadRequest, "datos inválidos")
+		respondError(w, http.StatusBadRequest, "invalid_request")
 		return
 	}
 
@@ -108,11 +110,14 @@ func (h *TransactionHandler) Update(w http.ResponseWriter, r *http.Request) {
 		h.accountService,
 	)
 	if err != nil {
-		if strings.Contains(err.Error(), "fecha") {
-			respondError(w, http.StatusBadRequest, err.Error())
-			return
+		switch err.Error() {
+		case "transaction_not_found":
+			respondError(w, http.StatusNotFound, "transaction_not_found")
+		case "invalid_date_format":
+			respondError(w, http.StatusBadRequest, "invalid_date_format")
+		default:
+			respondError(w, http.StatusInternalServerError, "update_failed")
 		}
-		respondError(w, http.StatusNotFound, err.Error())
 		return
 	}
 
@@ -126,7 +131,7 @@ func (h *TransactionHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 
 	if err := h.transactionService.Delete(r.Context(), id, userID, h.accountService); err != nil {
-		respondError(w, http.StatusNotFound, err.Error())
+		respondError(w, http.StatusNotFound, "transaction_not_found")
 		return
 	}
 

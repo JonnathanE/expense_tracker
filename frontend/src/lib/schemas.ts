@@ -36,7 +36,7 @@ export function createSchemas(t: TFunction) {
     const categorySchema = z.object({
         name: z.string().min(1, t("schema.nameRequired")),
         type: z.enum(["income", "expense"], {
-            required_error: t("schema.typeRequired"),
+            error: t("schema.typeRequired"),
         }),
         icon: z.string().min(1, t("schema.iconRequired")),
         color: z.string().min(1, t("schema.colorRequired")),
@@ -46,7 +46,7 @@ export function createSchemas(t: TFunction) {
         account_id: z.string().nullable(),
         category_id: z.string().nullable(),
         amount: z
-            .number({ invalid_type_error: t("schema.amountInvalid") })
+            .number({ error: t("schema.amountInvalid") })
             .positive(t("schema.amountPositive")),
         type: z.enum(["income", "expense"]),
         description: z.string(),
@@ -75,7 +75,7 @@ export function createSchemas(t: TFunction) {
         icon: z.string().min(1, t("schema.iconRequired")),
         color: z.string().min(1, t("schema.colorRequired")),
         balance: z
-            .number({ invalid_type_error: t("schema.amountInvalid") })
+            .number({ error: t("schema.amountInvalid") })
             .min(0, t("schema.balanceMin")),
         currency: z.string().min(1, t("schema.currencyRequired")),
         exclude_from_stats: z.boolean(),
@@ -85,10 +85,10 @@ export function createSchemas(t: TFunction) {
         from_account_id: z.string().min(1, t("schema.accountRequired")),
         to_account_id: z.string().min(1, t("schema.accountRequired")),
         amount: z
-            .number({ invalid_type_error: t("schema.amountInvalid") })
+            .number({ error: t("schema.amountInvalid") })
             .positive(t("schema.amountPositive")),
         fee: z
-            .number({ invalid_type_error: t("schema.amountInvalid") })
+            .number({ error: t("schema.amountInvalid") })
             .min(0, t("schema.feeMin")),
         description: z.string(),
         date: z.string().min(1, t("schema.dateRequired")),

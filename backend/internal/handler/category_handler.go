@@ -26,7 +26,7 @@ func (h *CategoryHandler) List(w http.ResponseWriter, r *http.Request) {
 
 	categories, err := h.categoryService.List(r.Context(), userID)
 	if err != nil {
-		respondError(w, http.StatusInternalServerError, "error obteniendo categorías")
+		respondError(w, http.StatusInternalServerError, "fetch_failed")
 		return
 	}
 
@@ -47,13 +47,13 @@ func (h *CategoryHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 	var req categoryRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		respondError(w, http.StatusBadRequest, "datos inválidos")
+		respondError(w, http.StatusBadRequest, "invalid_request")
 		return
 	}
 
 	req.Name = strings.TrimSpace(req.Name)
 	if req.Name == "" {
-		respondError(w, http.StatusBadRequest, "el nombre es requerido")
+		respondError(w, http.StatusBadRequest, "name_required")
 		return
 	}
 	if req.Icon == "" {
@@ -65,11 +65,12 @@ func (h *CategoryHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 	category, err := h.categoryService.Create(r.Context(), userID, req.Name, req.Type, req.Icon, req.Color)
 	if err != nil {
-		if strings.Contains(err.Error(), "tipo debe ser") {
-			respondError(w, http.StatusBadRequest, err.Error())
-			return
+		switch err.Error() {
+		case "invalid_type":
+			respondError(w, http.StatusBadRequest, "invalid_type")
+		default:
+			respondError(w, http.StatusInternalServerError, "create_failed")
 		}
-		respondError(w, http.StatusInternalServerError, "error creando categoría")
 		return
 	}
 
@@ -84,19 +85,19 @@ func (h *CategoryHandler) Update(w http.ResponseWriter, r *http.Request) {
 
 	var req categoryRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		respondError(w, http.StatusBadRequest, "datos inválidos")
+		respondError(w, http.StatusBadRequest, "invalid_request")
 		return
 	}
 
 	req.Name = strings.TrimSpace(req.Name)
 	if req.Name == "" {
-		respondError(w, http.StatusBadRequest, "el nombre es requerido")
+		respondError(w, http.StatusBadRequest, "name_required")
 		return
 	}
 
 	category, err := h.categoryService.Update(r.Context(), id, userID, req.Name, req.Icon, req.Color)
 	if err != nil {
-		respondError(w, http.StatusNotFound, err.Error())
+		respondError(w, http.StatusNotFound, "category_not_found")
 		return
 	}
 
@@ -110,7 +111,7 @@ func (h *CategoryHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 
 	if err := h.categoryService.Delete(r.Context(), id, userID); err != nil {
-		respondError(w, http.StatusNotFound, err.Error())
+		respondError(w, http.StatusNotFound, "category_not_found")
 		return
 	}
 

@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { type CreateTransferData, transfersApi } from "@/api/transfers";
+import { handleApiError } from "@/lib/apiError";
 import { useFilterStore } from "@/store/filterStore";
 
 export function useTransfers() {
@@ -33,6 +34,7 @@ export function useCreateTransfer() {
             queryClient.invalidateQueries({ queryKey: ["accounts"] });
             queryClient.invalidateQueries({ queryKey: ["summary"] });
         },
+        onError: (err) => handleApiError(err, "create"),
     });
 }
 
@@ -45,5 +47,6 @@ export function useDeleteTransfer() {
             queryClient.invalidateQueries({ queryKey: ["accounts"] });
             queryClient.invalidateQueries({ queryKey: ["summary"] });
         },
+        onError: (err) => handleApiError(err, "delete"),
     });
 }

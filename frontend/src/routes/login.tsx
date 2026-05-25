@@ -6,7 +6,6 @@ import {
     redirect,
     useNavigate,
 } from "@tanstack/react-router";
-import axios from "axios";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -25,6 +24,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { getApiErrorMessage, handleApiError } from "@/lib/apiError";
 import { APP_NAME } from "@/lib/constants";
 import { createSchemas, type LoginFormData } from "@/lib/schemas";
 import { useAuthStore } from "@/store/authStore";
@@ -61,6 +61,7 @@ function LoginPage() {
             toast.success(t("login.welcome", { name: data.user.name }));
             navigate({ to: "/" });
         },
+        onError: (err) => handleApiError(err, "auth"),
     });
 
     const onSubmit = (data: LoginFormData) => mutation.mutate(data);
@@ -101,11 +102,10 @@ function LoginPage() {
                                 {mutation.isError && (
                                     <Alert variant="destructive">
                                         <AlertDescription>
-                                            {axios.isAxiosError(mutation.error)
-                                                ? (mutation.error.response?.data
-                                                      ?.error ??
-                                                  t("login.error"))
-                                                : t("login.error")}
+                                            {getApiErrorMessage(
+                                                mutation.error,
+                                                "auth",
+                                            )}
                                         </AlertDescription>
                                     </Alert>
                                 )}

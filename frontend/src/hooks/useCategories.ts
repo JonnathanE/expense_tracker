@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { type CreateCategoryData, categoriesApi } from "@/api/categories";
+import { handleApiError } from "@/lib/apiError";
 
 export function useCategories() {
     return useQuery({
@@ -15,6 +16,7 @@ export function useCreateCategory() {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["categories"] });
         },
+        onError: (err) => handleApiError(err, "create"),
     });
 }
 
@@ -27,6 +29,7 @@ export function useUpdateCategory() {
             queryClient.invalidateQueries({ queryKey: ["categories"] });
             queryClient.invalidateQueries({ queryKey: ["summary"] });
         },
+        onError: (err) => handleApiError(err, "update"),
     });
 }
 
@@ -38,5 +41,6 @@ export function useDeleteCategory() {
             queryClient.invalidateQueries({ queryKey: ["categories"] });
             queryClient.invalidateQueries({ queryKey: ["summary"] });
         },
+        onError: (err) => handleApiError(err, "delete"),
     });
 }

@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { accountsApi, type CreateAccountData } from "@/api/accounts";
+import { handleApiError } from "@/lib/apiError";
 
 export function useAccounts() {
     return useQuery({
@@ -15,6 +16,7 @@ export function useCreateAccount() {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["accounts"] });
         },
+        onError: (err) => handleApiError(err, "create"),
     });
 }
 
@@ -26,6 +28,7 @@ export function useUpdateAccount() {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["accounts"] });
         },
+        onError: (err) => handleApiError(err, "update"),
     });
 }
 
@@ -38,5 +41,6 @@ export function useDeleteAccount() {
             queryClient.invalidateQueries({ queryKey: ["transactions"] });
             queryClient.invalidateQueries({ queryKey: ["summary"] });
         },
+        onError: (err) => handleApiError(err, "delete"),
     });
 }

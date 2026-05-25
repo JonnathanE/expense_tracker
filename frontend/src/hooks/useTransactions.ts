@@ -3,6 +3,7 @@ import {
     type CreateTransactionData,
     transactionsApi,
 } from "@/api/transactions";
+import { handleApiError } from "@/lib/apiError";
 import { useFilterStore } from "@/store/filterStore";
 
 export function useTransactions() {
@@ -52,6 +53,7 @@ export function useCreateTransaction() {
             queryClient.invalidateQueries({ queryKey: ["summary"] });
             queryClient.invalidateQueries({ queryKey: ["accounts"] });
         },
+        onError: (err) => handleApiError(err, "create"),
     });
 }
 
@@ -70,6 +72,7 @@ export function useUpdateTransaction() {
             queryClient.invalidateQueries({ queryKey: ["summary"] });
             queryClient.invalidateQueries({ queryKey: ["accounts"] });
         },
+        onError: (err) => handleApiError(err, "update"),
     });
 }
 
@@ -82,5 +85,6 @@ export function useDeleteTransaction() {
             queryClient.invalidateQueries({ queryKey: ["summary"] });
             queryClient.invalidateQueries({ queryKey: ["accounts"] });
         },
+        onError: (err) => handleApiError(err, "delete"),
     });
 }
